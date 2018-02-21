@@ -3,170 +3,150 @@
 *  Program name   : Client
 *  Author         : www.otrisovano.ru
 *  Date           : 01.11.2017 
-*  Purpose        : game frontend   
+*  Purpose        : game client   
  *********************************************/	
 
  
- 
 /*********************************************;
- *  LOCAL GAME OBJECT
- *********************************************/	
-
-const game = { 
-	client : {
-		nickName:"Mozgoprav",              
-		isWinner:"none",      
-		isWinnerBattle:1,  					
-		selectButton:"noSign", 
-		wins:0,                 
-		fatalitySigns: [],      
-		fatalitySignsClicked: [], 					
-	}, 	
-	enemy : { 
-		nickName:"Marazmatik",       		   
-		isWinner:"none",     
-		selectButton:"noSign",  
-		wins:0,                             
-		timerTest1:0,               	
-	},  
-	fightRound:0, 
-	timerFightVal: 7000, 
-	timerFight:0,
-                
-	timerFatality: 10000,	
-	flagFatality:false				
-};
-
-
-
-/*********************************************;
- *  CONSTRUCTOR CLIENT
+ *  Object CLIENT
  *********************************************/
 			
 const Client = {
-  init: () => { 
-	return Client.connectFirst();
-  },	
+	
+    timerRound: null,
   
-  /** connect to server */	
-  connectFirst: () => {
-	console.log('first connect'); 	  
-    $.get('/api/session/hello')
-      .done(function(result) {		  
-        game.client.nickName = result.name;
-		Screen.seeServer();			
-      });
-  },
+    /** prepear buttons */
+    init: () => { 
+        $('#buttonSearch').click( () => {
+            $('#info').append("Searching enemy:...");
+            $('#buttonSearch').hide();
+            startAnimationWait();				
+            Client.apiFindEnemy();	
+        });		
+        $('.buttonsChoice').click( (e) => {
+	        $('.buttonsChoice').hide();	
+            Client.sendHeroChoice( e.target.value );		
+        }); 	
+        $('.buttonsChoice').hide();
+	    $('#buttonSearch').hide();	
+	    return Client.connectFirst();
+    },	
   
-  /** search enemy */
-  apiFindEnemy: () => {
-	$.post("/api/user/find-game")
-		.then(function(result) {
-			if (result.state === 'playing') {
-				return Client.meetingPlayers();
-			} else { 
-				setTimeout( Client.apiFindEnemy, 500 ); 
-			}
-		});
-  },
+    /** connect to server */	
+    connectFirst: () => {	  
+        $.get('/api/session/hello')
+            .done(function(result) {		  
+		        $('#info').append('Connecting done! <br/> your name: ' + result.name + '<br/>---------------------------------------<br/>');
+		        $('#buttonSearch').show();					
+        });
+    },
   
-  /** get First gameObject */
-  meetingPlayers: () => {
-	$.get('/api/game', function(result) {
-		game.enemy.nickName = result.enemy.name;
-		Screen.initBattle(); 
-		console.log(result);
-	});
-  },
+    /** search enemy */
+    apiFindEnemy: () => {
+	    $.post("/api/user/find-game")
+		    .then(function(result) {
+			    if (result.state === 'playing') {
+				    stopAnimationWait();
+				    return Client.meetingPlayers();					  
+			    } else { 
+				    setTimeout( Client.apiFindEnemy, 500 ); 
+			    }
+		    });
+    },
+  
+    /** get First gameObject */
+    meetingPlayers: () => {
+	    $.get('/api/game', function(result) {
+	        $('#info').append('ok.<br/ >---------------------------------------<br/>Find Enemy: ' + result.enemy.name);  
+            Client.startRound(); 		
+	    });
+    },
+  
+    /** start round */
+    startRound: () => {
+        $('#info').append('<br/>---------------------------------------<br/>Round: ');
+        startAnimationWait();
+        $('.buttonsChoice').show();	
+	    Client.timerRound = setInterval(Client.waitEnemyChoice, 500);  	  
+    },
 
-  /** wait Enemy Choise */
-  updateGameResult: (result) => {
-	if (result.enemyMadeChoice) {
-		var allresults = result.results;
-		var lastresult = allresults[allresults.length-1];
-		game.enemy.selectButton = lastresult.enemyChoice;				
-	} else {
-		setTimeout(() => {
-			$.get('/api/game').done(updateGameResult)
-		}, 500);
-	}
-  },
+    /** get Results round */
+    updateGameResult: (result) => { 	
+        if (result.enemyMadeChoice) {	
+            var allresults = result.results;
+            var lastresult = allresults.length-1;
+	        $('#info').append("<br/>Hero: " + lastresult.myChoise + "/ Enemy: " + lastresult.enemyChoice);
+	        stopAnimationWait();
+	        clearInterval( Client.timerRound );	  
+	        Client.nextRound();
+	    } else {
+            setTimeout( () => {
+                $.get('/api/game').done(Client.updateGameResult)
+            }, 500);
+	    }  
+    },
   
-  /** get enemy Choise */
-  waitEnemyChoice: () => {
-	$.get('/api/game').done(function(results) {
-		if (results.enemyMadeChoice) {
-			Screen.enemyMadeChoice(); 
-		}
-	})
-  },
+    /** waite enemy Choice */
+    waitEnemyChoice: () => {
+        $.get('/api/game').done(function(results) {
+            if (results.enemyMadeChoice) {
+                $('#info').append('Enemy made choice. ')	 	  
+            }
+        })
+    },
 
-  /** send player Choise */
-  sendHeroChoise: (choise) => { 
-  		$.post('/api/game/move?choice=' + choise)
-			.then(updateGameResult);
-  },	 
+    /** send player Choice */
+    sendHeroChoice: (choice) => { 
+	    //console.log(choice);
+        $.post('/api/game/move?choice=' + choice)
+            .then(Client.updateGameResult); 
+    },	 
   
-  /** endTimer fight round */
-  endTimerFight: () => { 
-	$.post('/api/game/move?choice=timeout')
-		.then(updateGameResult);
-  }
-} 
-
+    /** endTimer fight round */
+    endTimerRound: () => { 
+	    $.post('/api/game/move?choice=timeout')
+		    .then(Client.updateGameResult)
+    },
+  
+    /** next round */
+    nextRound: () => {
+        $.post('/api/game/next-round')
+           .then(function(result) {
+                if (result.state === 'over') {
+		            Client.endBattle();
+                } else {
+		            Client.startRound();
+                }
+        });
+    },
+  
+    endBattle: () => {
+	     $('#info').append('<br/>EndBattle'); 
+    }
+}; 
 
 
 /*********************************************;
- *  CONSTRUCTOR SCREEN
+ *  Functions
  *********************************************/
 
-const Screen = {
-  
-  waitEnemyTimer : null,
-	  
-  init:() => {
-    $('.choise').hide();
-	$('#search').hide();
-  },
-  
-  seeServer: () => {
-    $('#info').append('Connecting Done! <br/> your name: ' + game.client.nickName + '<br/>');
-	$('#info').append('---------------------------------------<br/>');	  
-	$('#search').show();
-	$('#search').click( function(){
-	  $('#info').append("Searching enemy:");
-	  Client.apiFindEnemy();
-	  Screen.waitEnemy();
-	  $('#search').hide();		  
-    });  
-  },
-  
-  waitEnemy: () => {
-    $('#info').append('*');
-    Screen.waitEnemyTimer = setTimeout(Screen.waitEnemy, 200);
-  },
+let intervalAnimation = false; 
+const startAnimationWait = () => {
+    $('<div/>',{ 'id' : 'loadBar' }).appendTo('#info');	
+    intervalAnimation = setInterval( waitProgress, 1000 );
+}
+const waitProgress = () => {
+    $('#loadBar').append('*');	
+} 
+const stopAnimationWait = () => {
+    clearInterval( intervalAnimation );
+    $('#loadBar').remove();	
+}
  
-  initBattle: () => {
-    clearTimeout( Screen.waitEnemyTimer );	 
-    $('#info').append('ok.<br/ >---------------------------------------<br/>');	
-    $('#info').append('Find Enemy: ' + game.enemy.nickName + '<br/>');
-    $('#info').append('---------------------------------------<br/>');	
-    $('#info').append('Round!: <br/>');		
-    $('.choise').show();
-    Screen.waitEnemyTimer = setTimeout(Screen.waitEnemy, 200);	
-  },
-  
-  enemyMadeChoice(){
-    $('#info').append('!Enemy Choise!');	
-  }
-   
-}	
-
-
-
+ 
 /*********************************************;
  *  INIT GAME
  *********************************************/
   
-Screen.init();
 Client.init();
+
