@@ -56,7 +56,8 @@ const Client = {
 		    .then(function(result) {
 			    if (result.state === 'playing') {
 				    stopAnimationWait();
-				    return Client.meetingPlayers();					  
+					console.log(result);
+				    return Client.meetingPlayers();						
 			    } else { 
 				    setTimeout( Client.apiFindEnemy, 500 ); 
 			    }
@@ -66,7 +67,7 @@ const Client = {
     /** get First gameObject */
     meetingPlayers: () => {
 	    $.get('/api/game', function(result) {
-	        
+	        console.log(result); 
             $('#info').append('ok.' + line + 
                 'Find Enemy: ' + result.enemy.name);
 				
@@ -84,7 +85,7 @@ const Client = {
         startAnimationWait();
         $('.buttonsChoice').show();	
         Client.timerListenChoiceEnemy = setInterval(Client.waitEnemyChoice, 500);
-        Client.timerRound = setTimeout(Client.endTimerRound, 7000);		
+        Client.timerRound = setTimeout(Client.endTimerRound, 14000);		
     },
 
     /** get Results round */
@@ -100,6 +101,8 @@ const Client = {
 	        stopAnimationWait();
 	        clearInterval( Client.timerListenChoiceEnemy );	  
 	        Client.nextRound();
+			
+			console.log(result);
 	    } else {
             setTimeout( () => {
                 $.get('/api/game').done(Client.updateGameResult)
@@ -142,7 +145,7 @@ const Client = {
     },
 	
 	
-    /** FUNCTIONS END GAME ================== */
+    /** FUNCTIONS END GAME ================ == */
     /** ======================================*/	
   
     endBattle: () => {
