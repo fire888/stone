@@ -17,8 +17,8 @@ const Client = {
 	timerRound: null,
 	
 	
-    /** FUNCTIONS INIT/CONNECTION ============================================== */
-    /** ======================================================================== */
+    /** FUNCTIONS INIT/CONNECTION =========== */
+    /** ======================================*/
   
     /** prepear buttons */
     init: () => { 
@@ -75,15 +75,15 @@ const Client = {
     },
 	
 	
-    /** FUNCTIONS PLAY ROUND =================================================== */
-    /** ======================================================================== */	
+    /** FUNCTIONS PLAY ROUND ================ */
+    /** ======================================*/	
 	
     /** start round */
     startRound: () => {
         $('#info').append( line + 'Round:<br/>');
         startAnimationWait();
         $('.buttonsChoice').show();	
-	    Client.timerListenChoiceEnemy = setInterval(Client.waitEnemyChoice, 500);
+        Client.timerListenChoiceEnemy = setInterval(Client.waitEnemyChoice, 500);
         Client.timerRound = setTimeout(Client.endTimerRound, 7000);		
     },
 
@@ -142,8 +142,8 @@ const Client = {
     },
 	
 	
-    /** FUNCTIONS END GAME ===================================================== */
-    /** ======================================================================== */		
+    /** FUNCTIONS END GAME ================== */
+    /** ======================================*/	
   
     endBattle: () => {
         $('#info').append('<br/>EndBattle'); 
