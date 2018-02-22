@@ -13,7 +13,12 @@
 			
 const Client = {
 	
-    timerRound: null,
+    timerListenChoiceEnemy: null,
+	timerRound: null,
+	
+	
+	/** FUNCTIONS INIT/CONNECTION ============================================== */
+	/** ======================================================================== */
   
     /** prepear buttons */
     init: () => { 
@@ -36,7 +41,11 @@ const Client = {
     connectFirst: () => {	  
         $.get('/api/session/hello')
             .done(function(result) {		  
-		        $('#info').append('Connecting done! <br/> your name: ' + result.name + '<br/>---------------------------------------<br/>');
+		        
+				$('#info').append(
+				    'Connecting done! <br/>' +
+					'your name: ' + result.name + line);
+					
 		        $('#buttonSearch').show();					
         });
     },
@@ -57,17 +66,25 @@ const Client = {
     /** get First gameObject */
     meetingPlayers: () => {
 	    $.get('/api/game', function(result) {
-	        $('#info').append('ok.<br/ >---------------------------------------<br/>Find Enemy: ' + result.enemy.name);  
+	        
+			$('#info').append('ok.' + line + 
+			    'Find Enemy: ' + result.enemy.name);
+				
             Client.startRound(); 		
 	    });
     },
-  
+	
+	
+	/** FUNCTIONS PLAY ROUND =================================================== */
+	/** ======================================================================== */	
+	
     /** start round */
     startRound: () => {
-        $('#info').append('<br/>---------------------------------------<br/>Round: ');
+        $('#info').append( line + 'Round:<br/>');
         startAnimationWait();
         $('.buttonsChoice').show();	
-	    Client.timerRound = setInterval(Client.waitEnemyChoice, 500);  	  
+	    Client.timerListenChoiceEnemy = setInterval(Client.waitEnemyChoice, 500);
+        Client.timerRound = setTimeout(Client.endTimerRound, 7000);		
     },
 
     /** get Results round */
@@ -75,15 +92,19 @@ const Client = {
         if (result.enemyMadeChoice) {	
             var allresults = result.results;
             var lastresult = allresults.length-1;
-	        $('#info').append("<br/>Hero: " + lastresult.myChoise + "/ Enemy: " + lastresult.enemyChoice);
+			
+	        $('#info').append("<br/>Hero: " + 
+			    lastresult.myChoise + "/ Enemy: " + 
+				lastresult.enemyChoice);
+				
 	        stopAnimationWait();
-	        clearInterval( Client.timerRound );	  
+	        clearInterval( Client.timerListenChoiceEnemy );	  
 	        Client.nextRound();
 	    } else {
             setTimeout( () => {
                 $.get('/api/game').done(Client.updateGameResult)
             }, 500);
-	    }  
+        }  
     },
   
     /** waite enemy Choice */
@@ -97,7 +118,6 @@ const Client = {
 
     /** send player Choice */
     sendHeroChoice: (choice) => { 
-	    //console.log(choice);
         $.post('/api/game/move?choice=' + choice)
             .then(Client.updateGameResult); 
     },	 
@@ -112,6 +132,7 @@ const Client = {
     nextRound: () => {
         $.post('/api/game/next-round')
            .then(function(result) {
+                console.log('nextRounf func');					
                 if (result.state === 'over') {
 		            Client.endBattle();
                 } else {
@@ -119,6 +140,10 @@ const Client = {
                 }
         });
     },
+	
+	
+	/** FUNCTIONS END GAME ===================================================== */
+	/** ======================================================================== */		
   
     endBattle: () => {
 	     $('#info').append('<br/>EndBattle'); 
@@ -130,6 +155,10 @@ const Client = {
  *  Functions
  *********************************************/
 
+const line = '<br/>------------------' +
+              '----------------------' +
+			  '----------------------<br/>'; 
+ 
 let intervalAnimation = false; 
 const startAnimationWait = () => {
     $('<div/>',{ 'id' : 'loadBar' }).appendTo('#info');	
