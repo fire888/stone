@@ -42,11 +42,11 @@ const Client = {
         $.get('/api/session/hello')
             .done(function(result) {		  
 		        
-				$('#info').append(
-				    'Connecting done! <br/>' +
-					'your name: ' + result.name + line);
+                $('#info').append(
+                   'Connecting done! <br/>' +
+                   'your name: ' + result.name + line);
 					
-		        $('#buttonSearch').show();					
+                $('#buttonSearch').show();					
         });
     },
   
@@ -67,8 +67,8 @@ const Client = {
     meetingPlayers: () => {
 	    $.get('/api/game', function(result) {
 	        
-			$('#info').append('ok.' + line + 
-			    'Find Enemy: ' + result.enemy.name);
+            $('#info').append('ok.' + line + 
+                'Find Enemy: ' + result.enemy.name);
 				
             Client.startRound(); 		
 	    });
@@ -92,10 +92,10 @@ const Client = {
         if (result.enemyMadeChoice) {	
             var allresults = result.results;
             var lastresult = allresults.length-1;
-			
-	        $('#info').append("<br/>Hero: " + 
-			    lastresult.myChoise + "/ Enemy: " + 
-				lastresult.enemyChoice);
+
+            $('#info').append("<br/>Hero: " + 
+                lastresult.myChoise + "/ Enemy: " + 
+                lastresult.enemyChoice);
 				
 	        stopAnimationWait();
 	        clearInterval( Client.timerListenChoiceEnemy );	  
@@ -146,7 +146,7 @@ const Client = {
     /** ======================================================================== */		
   
     endBattle: () => {
-	     $('#info').append('<br/>EndBattle'); 
+        $('#info').append('<br/>EndBattle'); 
     }
 }; 
 
