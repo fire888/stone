@@ -102,7 +102,7 @@ const Client = {
 	        clearInterval( Client.timerListenChoiceEnemy );	  
 	        Client.nextRound();
 			
-			console.log(result);
+            console.log(result);
 	    } else {
             setTimeout( () => {
                 $.get('/api/game').done(Client.updateGameResult)
@@ -155,7 +155,7 @@ const Client = {
 
 
 /*********************************************;
- *  Functions
+ *  DRAW SCREEN FUNCTIONS
  *********************************************/
 
 const line = '<br/>------------------' +
