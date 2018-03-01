@@ -15,12 +15,7 @@ const Client = {
 	
     timerListenChoiceEnemy: null,
 	timerRound: null,
-	
-	flagEnemyChoice: false,
-	flagOldEnemyChoice: false,
-	
-	flagHeroChoise: false,
-	
+			
 	
     /** FUNCTIONS INIT/CONNECTION =========== */
     /** ======================================*/
@@ -38,9 +33,9 @@ const Client = {
 
 		/** buttons Stone,Scissors,Paper */	
         $('.buttonsChoice').click( (e) => {
-	        $('.buttonsChoice').hide();	
-			Client.flagHeroChoise = true; 			
-//          Client.sendHeroChoice( e.target.value );		
+	        $('.buttonsChoice').hide();				
+			Client.sendHeroChoice( e.target.value );
+		
         }); 
 			
         $('.buttonsChoice').hide();
@@ -96,65 +91,46 @@ const Client = {
         startAnimationWait();
         $('.buttonsChoice').show();	
         Client.timerListenChoiceEnemy = setInterval(Client.waitEnemyChoice, 500);
-        //Client.timerRound = setTimeout(Client.endTimerRound, 14000);		
+        //Client.timerRound = setTimeout(Client.endTimerRound, 7000);		
     },
 	
     /** waite enemy Choice */
     waitEnemyChoice: () => {
         $.get('/api/game').done(function(results) {
             if (results.enemyMadeChoice) {
-				
-				Client.flagEnemyChoice = true;
-				if (Client.flagEnemyChoice != Client.flagOldEnemyChoice){
-					console.log(results.enemyMadeChoice);			
-					Client.flagOldEnemyChoice = true;	
-					
-					//Client.updateGameResult(results);
-					//$('#info').append('Enemy made choice. ');			
-				} 				
+				clearInterval( Client.timerListenChoiceEnemy );	
+				$('#info').append('Enemy made choice.');					
             }
         })
     },	
 
-    /** get Results round */
-//  updateGameResult: (result) => { 	
-//      if ( Client.flagEnemyChoice && !Client.flagHeroChoise ) {
-//          return;			
-//      }
-//		
-//      if ( Client.flagEnemyChoice && Client.flagHeroChoise ){
-//          console.log('round done');		
-//      }
-//      var allresults = result.results;
-//      var lastresult = allresults.length-1;
-//
-//      $('#info').append("<br/>Hero: " + 
-//             lastresult.myChoise + "/ Enemy: " + 
-//             lastresult.enemyChoice);
-//		
-//      stopAnimationWait();
-//      clearInterval( Client.timerListenChoiceEnemy );	  
-//      Client.nextRound();
-//	    console.log(result);
-//      } else {
-//         setTimeout( () => {
-//             $.get('/api/game').done(Client.updateGameResult)
-//         }, 500);
-//      }  
-//  },
-  
-
     /** send player Choice */
-//  sendHeroChoice: (choice) => { 
-//      $.post('/api/game/move?choice=' + choice)
-//          .then(Client.updateGameResult); 
-//  },	 
+	sendHeroChoice: (choice) => { 
+		$('#info').append('You: ' + choice + '<br/>');	
+		$.post('/api/game/move?choice=' + choice)
+			.then(Client.updateGameResult); 
+	},	 
   
     /** endTimer fight round */
-//  endTimerRound: () => { 
-//      $.post('/api/game/move?choice=timeout')
-//          .then(Client.updateGameResult)
-//  },
+//	endTimerRound: () => { 
+//		$.post('/api/game/move?choice=timeout')
+//			.then(Client.updateGameResult)
+//	},
+	
+    /** Check round winner */
+    updateGameResult: (result) => { 
+		if (result.enemyMadeChoice) {		
+			var allresults = result.results;
+			var lastresult = allresults.length-1;
+			
+			console.log(result); 							
+		} else {
+			setTimeout( () => {
+				console.log("waiteEnemy");
+				$.get('/api/game').done(Client.updateGameResult)
+			}, 500);
+		}  
+	},	
   
     /** next round */
 //  nextRound: () => {
