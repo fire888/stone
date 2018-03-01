@@ -40,7 +40,7 @@ const Client = {
         $('.buttonsChoice').click( (e) => {
 	        $('.buttonsChoice').hide();	
 			Client.flagHeroChoise = true; 			
-            Client.sendHeroChoice( e.target.value );		
+//          Client.sendHeroChoice( e.target.value );		
         }); 
 			
         $('.buttonsChoice').hide();
@@ -106,9 +106,9 @@ const Client = {
 				
 				Client.flagEnemyChoice = true;
 				if (Client.flagEnemyChoice != Client.flagOldEnemyChoice){
-					console.log("Enemy made choise: " + results.enemyMadeChoice);
-					Client.flagOldEnemyChoice = true;									
-	
+					console.log(results.enemyMadeChoice);			
+					Client.flagOldEnemyChoice = true;	
+					
 					//Client.updateGameResult(results);
 					//$('#info').append('Enemy made choice. ');			
 				} 				
@@ -117,57 +117,56 @@ const Client = {
     },	
 
     /** get Results round */
-    //updateGameResult: (result) => { 	
-        //if ( Client.flagEnemyChoice && !Client.flagHeroChoise ) {
-		//	return;		
-		//}
-		
-		//if ( Client.flagEnemyChoice && Client.flagHeroChoise ){
-		//	console.log('round done');		
-		//}
-        //    var allresults = result.results;
-         //   var lastresult = allresults.length-1;
-
-         //   $('#info').append("<br/>Hero: " + 
-         //       lastresult.myChoise + "/ Enemy: " + 
-         //       lastresult.enemyChoice);
-				
-	        //stopAnimationWait();
-	        //clearInterval( Client.timerListenChoiceEnemy );	  
-	        //Client.nextRound();
-			
-        //    console.log(result);
-        //} else {
-         //   setTimeout( () => {
-         //       $.get('/api/game').done(Client.updateGameResult)
-         //   }, 500);
-        // }  
-    //},
+//  updateGameResult: (result) => { 	
+//      if ( Client.flagEnemyChoice && !Client.flagHeroChoise ) {
+//          return;			
+//      }
+//		
+//      if ( Client.flagEnemyChoice && Client.flagHeroChoise ){
+//          console.log('round done');		
+//      }
+//      var allresults = result.results;
+//      var lastresult = allresults.length-1;
+//
+//      $('#info').append("<br/>Hero: " + 
+//             lastresult.myChoise + "/ Enemy: " + 
+//             lastresult.enemyChoice);
+//		
+//      stopAnimationWait();
+//      clearInterval( Client.timerListenChoiceEnemy );	  
+//      Client.nextRound();
+//	    console.log(result);
+//      } else {
+//         setTimeout( () => {
+//             $.get('/api/game').done(Client.updateGameResult)
+//         }, 500);
+//      }  
+//  },
   
 
     /** send player Choice */
-    //sendHeroChoice: (choice) => { 
-     //   $.post('/api/game/move?choice=' + choice)
-      //      .then(Client.updateGameResult); 
-    //},	 
+//  sendHeroChoice: (choice) => { 
+//      $.post('/api/game/move?choice=' + choice)
+//          .then(Client.updateGameResult); 
+//  },	 
   
     /** endTimer fight round */
-    //endTimerRound: () => { 
-	 //   $.post('/api/game/move?choice=timeout')
-	//	    .then(Client.updateGameResult)
-    //},
+//  endTimerRound: () => { 
+//      $.post('/api/game/move?choice=timeout')
+//          .then(Client.updateGameResult)
+//  },
   
     /** next round */
-    //nextRound: () => {
-    //    $.post('/api/game/next-round')
-    //       .then(function(result) {				
-     //           if (result.state === 'over') {
-	//	            Client.endBattle();
-    //            } else {
-	//	            Client.startRound();
-    //            }
-     //   });
-    //},
+//  nextRound: () => {
+//      $.post('/api/game/next-round')
+//         .then(function(result) {				
+//              if (result.state === 'over') {
+//                    Client.endBattle();
+//              } else {
+//            Client.startRound();
+//              }
+//      });
+//  },
 	
 	
     /** FUNCTIONS END GAME ================== */
