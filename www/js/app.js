@@ -15,6 +15,7 @@ const Client = {
 	
     timerListenChoiceEnemy: null,
 	timerRound: null,
+	timerUpdateGameResult: null,
 	
 	hashFatality: null,
 	strFatality: "",	
@@ -96,16 +97,18 @@ const Client = {
         $('#info').append( line + 'Round:<br/>');
         startAnimationWait();
         $('.buttonsChoice').show();	
-        Client.timerListenChoiceEnemy = setInterval(Client.waitEnemyChoice, 500);
+        Client.timerListenChoiceEnemy = setInterval(Client.waitEnemyChoice, 1000);
         Client.timerRound = setTimeout(Client.endTimerRound, 7000);		
     },
 	
     /** waite enemy Choice */
-    waitEnemyChoice: () => {
+    waitEnemyChoice: () => {	
         $.get('/api/game').done(function(results) {
-            if (results.enemyMadeChoice) {
-				clearInterval( Client.timerListenChoiceEnemy );	
-				$('#info').append('Enemy made choice.');					
+            if (results.enemyMadeChoice) {	
+			
+				clearInterval( Client.timerListenChoiceEnemy );			
+				$('#info').append('Enemy made choice.');
+				console.log(results);	
             }
         })
     },		
@@ -119,17 +122,16 @@ const Client = {
   
     /** endTimer fight round */
 	endTimerRound: () => { 
+		clearInterval(Client.timerListenChoiceEnemy);
 		$.post('/api/game/move?choice=timeout')
 			.then(Client.updateGameResult);
 	},
 	
     /** Check round winner */
-    updateGameResult: (result) => {
+    updateGameResult: (result) => {	
 		if (result.enemyMadeChoice) {	
-
+			clearTimeout( Client.timerUpdateGameResult );
 			clearTimeout(Client.timerRound);
-			clearInterval(Client.timerListenChoiceEnemy);
-			
 			stopAnimationWait();			
 			$('#info').append(
 					"<br/>Your: " + result.results[result.results.length-1].myChoice + 
@@ -139,7 +141,7 @@ const Client = {
 					setTimeout(Client.nextRound, 2000);		
 							
 		} else {
-			setTimeout( () => {				
+			Client.timerUpdateGameResult = setTimeout( () => {				
 				$.get('/api/game').done(Client.updateGameResult)
 			}, 500);
 		}  
@@ -149,7 +151,6 @@ const Client = {
 	nextRound: () => {
 		$.post('/api/game/next-round')
 			.then(function(result) {	
-				console.log(result)
 				if (result.state === 'over') {
                     Client.endBattle();
 				}
