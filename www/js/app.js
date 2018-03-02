@@ -15,6 +15,12 @@ const Client = {
 	
     timerListenChoiceEnemy: null,
 	timerRound: null,
+	
+	hashFatality: null,
+	strFatality: "",	
+	userChoiseFatality: null,
+	timerEndFatality: null,
+
 			
 	
     /** FUNCTIONS INIT/CONNECTION =========== */
@@ -91,7 +97,7 @@ const Client = {
         startAnimationWait();
         $('.buttonsChoice').show();	
         Client.timerListenChoiceEnemy = setInterval(Client.waitEnemyChoice, 500);
-        //Client.timerRound = setTimeout(Client.endTimerRound, 7000);		
+        Client.timerRound = setTimeout(Client.endTimerRound, 7000);		
     },
 	
     /** waite enemy Choice */
@@ -102,8 +108,8 @@ const Client = {
 				$('#info').append('Enemy made choice.');					
             }
         })
-    },	
-
+    },		
+	
     /** send player Choice */
 	sendHeroChoice: (choice) => { 
 		$('#info').append('You: ' + choice + '<br/>');	
@@ -112,42 +118,96 @@ const Client = {
 	},	 
   
     /** endTimer fight round */
-//	endTimerRound: () => { 
-//		$.post('/api/game/move?choice=timeout')
-//			.then(Client.updateGameResult)
-//	},
+	endTimerRound: () => { 
+		$.post('/api/game/move?choice=timeout')
+			.then(Client.updateGameResult);
+	},
 	
     /** Check round winner */
-    updateGameResult: (result) => { 
-		if (result.enemyMadeChoice) {		
-			var allresults = result.results;
-			var lastresult = allresults.length-1;
+    updateGameResult: (result) => {
+		if (result.enemyMadeChoice) {	
+
+			clearTimeout(Client.timerRound);
+			clearInterval(Client.timerListenChoiceEnemy);
 			
-			console.log(result); 							
+			stopAnimationWait();			
+			$('#info').append(
+					"<br/>Your: " + result.results[result.results.length-1].myChoice + 
+					" / Enemy: " + result.results[result.results.length-1].enemyChoice + 
+					" / Winner: " + result.results[result.results.length-1].winner );
+					
+					setTimeout(Client.nextRound, 2000);		
+							
 		} else {
-			setTimeout( () => {
-				console.log("waiteEnemy");
+			setTimeout( () => {				
 				$.get('/api/game').done(Client.updateGameResult)
 			}, 500);
 		}  
 	},	
   
     /** next round */
-//  nextRound: () => {
-//      $.post('/api/game/next-round')
-//         .then(function(result) {				
-//              if (result.state === 'over') {
-//                    Client.endBattle();
-//              } else {
-//            Client.startRound();
-//              }
-//      });
-//  },
+	nextRound: () => {
+		$.post('/api/game/next-round')
+			.then(function(result) {	
+				console.log(result)
+				if (result.state === 'over') {
+                    Client.endBattle();
+				}
+				
+				if ( result.state === 'wait_fatality'){ 
+					Client.startFatality( result );		
+				}
+				 		
+				if ( result.state !== 'fatality' && result.state !== 'wait_fatality'   ) {
+					Client.startRound();		
+				}
+			});
+		},
 	
 	
     /** FUNCTIONS END GAME ================== */
     /** ======================================*/	
   
+	startFatality: (result) => {
+		Client.timerEndFatality = setTimeout(Client.endFatality, 7000);	
+		startAnimationWait();
+		
+		if (result.winner === "me"  ){	
+			Client.makeHashFatality();		
+			$('.buttonsChoice').show();		
+		}else{
+			$('#info').append('<br/>wait Death..');						
+		}	
+		
+	},
+	
+	makeHashFatality: () => {		
+		Client.hashFatality = [];
+		$('#info').append('<br/>Fatality: ');
+		for ( let i=0; i < 5; i++ ){
+			let n = Math.floor(Math.random()*3);
+			if ( n == 0){
+				Client.hashFatality.push("stone");
+				$('#info').append(" stone");
+			}
+			if ( n == 1){
+				Client.hashFatality.push("scissors");
+				$('#info').append(" scissors");				
+			}
+			if ( n == 2){
+				Client.hashFatality.push("paper");
+				$('#info').append(" paper");				
+			}					
+		}
+	},
+	
+	endFatality: () => {
+		$('.buttonsChoice').hide();		
+		stopAnimationWait();	
+		$('#info').append("<br/> HERE GAME NOT WORKING <br/>");
+		Client.connectFirst();		
+	},
+	
     endBattle: () => {
         $('#info').append('<br/>EndBattle'); 
     }
