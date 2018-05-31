@@ -5,7 +5,7 @@
 *  Date           : 01.11.2017 
 *  Purpose        : game client   
  *********************************************/	
-
+alert('!')
  
 /*********************************************;
  *  Object CLIENT
@@ -17,7 +17,8 @@ const Client = {
 	timerRound: null,
 	timerUpdateGameResult: null,
 	
-	hashFatality: null,
+	gameStatus: "none",
+	randomFatalityHash: null,
 	strFatality: "",	
 	userChoiseFatality: null,
 	timerEndFatality: null,
@@ -40,9 +41,12 @@ const Client = {
 
 		/** buttons Stone,Scissors,Paper */	
         $('.buttonsChoice').click( (e) => {
-	        $('.buttonsChoice').hide();				
-			Client.sendHeroChoice( e.target.value );
-		
+			if (Client.gameStatus != "wait-choice-fatality" ){			
+				$('.buttonsChoice').hide();				
+				Client.sendHeroChoice( e.target.value );
+			}else{
+				Client.checkFatalityDone( e.target.value );
+			}				
         }); 
 			
         $('.buttonsChoice').hide();
@@ -150,12 +154,14 @@ const Client = {
     /** next round */
 	nextRound: () => {
 		$.post('/api/game/next-round')
-			.then(function(result) {	
+			.then(function(result) {
+				console.log(result);	
 				if (result.state === 'over') {
                     Client.endBattle();
 				}
 				
 				if ( result.state === 'wait_fatality'){ 
+					Client.gameStatus = "wait-choice-fatality";
 					Client.startFatality( result );		
 				}
 				 		
@@ -170,43 +176,69 @@ const Client = {
     /** ======================================*/	
   
 	startFatality: (result) => {
-		Client.timerEndFatality = setTimeout(Client.endFatality, 7000);	
+		Client.timerEndFatality = setTimeout(Client.endFatality, 50000);	
 		startAnimationWait();
 		
 		if (result.winner === "me"  ){	
 			Client.makeHashFatality();		
 			$('.buttonsChoice').show();		
 		}else{
-			$('#info').append('<br/>wait Death..');						
+			$('#info').append('<br/>wait Death...');						
 		}	
 		
 	},
 	
 	makeHashFatality: () => {		
-		Client.hashFatality = [];
+		Client.randomFatalityHash = [];
 		$('#info').append('<br/>Fatality: ');
 		for ( let i=0; i < 5; i++ ){
 			let n = Math.floor(Math.random()*3);
 			if ( n == 0){
-				Client.hashFatality.push("stone");
+				Client.randomFatalityHash.push("stone");
 				$('#info').append(" stone");
 			}
 			if ( n == 1){
-				Client.hashFatality.push("scissors");
+				Client.randomFatalityHash.push("scissors");
 				$('#info').append(" scissors");				
 			}
 			if ( n == 2){
-				Client.hashFatality.push("paper");
+				Client.randomFatalityHash.push("paper");
 				$('#info').append(" paper");				
 			}					
 		}
 	},
 	
+	checkFatalityDone: (choice) => {
+
+		console.log(choice) 
+		//if (choice == Client.randomFatalityHash[0]){		
+			//Client.hrandomFatalityHash.splice(0, 1);
+			//if (Client.randomFatalityHash.length == 0){
+			//	$('#info').append("<br/>FATALITY !!!!");
+			//		$.post('/api/game/fatalityDone')
+			//			.then( function(){
+			//				endFatality();						
+			//			});	
+			//}
+		//}else{
+		console.log('wrongFatality');
+			//$.post('/api/game/fatalityCrash')
+			//	.then( function(){
+		Client.endFatality();
+			//   });
+		//}
+	},
+	
 	endFatality: () => {
 		$('.buttonsChoice').hide();		
 		stopAnimationWait();	
-		$('#info').append("<br/> HERE GAME NOT WORKING <br/>");
-		Client.connectFirst();		
+		$('#info').append("<br/>Fatality Crash !! <br/>");
+
+		$.post('/api/game/fatalityDone')
+			.then( function(){
+		        //endFatality();						
+	    });
+		//Client.connectFirst();		
 	},
 	
     endBattle: () => {

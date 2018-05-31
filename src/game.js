@@ -1,6 +1,6 @@
 const WinMatrix = {
-    stone: "snip",
-    snip:  "paper",
+    stone: "scissors",
+    scissors:  "paper",
     paper: "stone"
 }
 
@@ -162,9 +162,9 @@ class Game {
     }
 
     startRound() {
-        if (this.roundTimer !== null)
-            clearTimeout(this.roundTimer);
-        this.roundTimer = setTimeout(() => this.roundTimeoutAlarm(), 10000);
+        //if (this.roundTimer !== null)
+        //   clearTimeout(this.roundTimer);
+        //this.roundTimer = setTimeout(() => this.roundTimeoutAlarm(), 10000);
     }
 
     roundTimeoutAlarm() {

@@ -2,9 +2,9 @@
   "name": "stone_back",
   "version": "1.0.0",
   "description": "Stone Scissors Paper",
-  "main": "app.js",
+  "main": "stone.js",
   "scripts": {
-    "backend": "node app.js",
+    "backend": "node stone.js",
     "lint": "eslint ./",
     "test": "./node_modules/.bin/mocha",
     "cover": "istanbul cover _mocha"

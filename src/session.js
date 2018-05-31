@@ -38,7 +38,7 @@ class Session {
     hello() {
         let promise = null;
         if (!this.user) {
-            promise = this.userDB.newAnonymous();
+            promise = this.userDB.newAnonymous();//!!!!!!!!!!!!!!!   
         } else {
             promise = Promise.resolve(this.user);
         }
