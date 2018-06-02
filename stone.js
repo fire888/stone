@@ -19,7 +19,7 @@ app.get('/api/session/hello', function (req, res) {
         .then(() => {
               let session = sessionDB.findSession(token);
               if (!session) {
-                  return sessionDB.newSession(); //!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                  return sessionDB.newSession();
               }
               return session;
         }).then((session) => {
@@ -85,8 +85,17 @@ app.post('/api/game/fatality', function (req, res) {
     if (!user)
         return;
     if (!user.game)
-        return res.status(404).send();
-    res.send(user.game.fatality(user, req.query.combination)); //!!!!!!!!!!!!!!!!!!!!!!!!!
+        return res.status(404).send();       
+    res.send(user.game.fatality(user, req.query.is));
+});
+
+app.post('/api/game/isFatalityDoneForLoser', function( req, res ) {
+    const user = findUser(req, res);
+    if (!user)
+        return;
+    if (!user.game)
+        return res.status(404).send();       
+    res.send( user.game.getFatalityResult(user) );   
 });
 
 function findUser(req, res)

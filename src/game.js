@@ -12,7 +12,7 @@ class Game {
         this.results = [];
         this.choices = [ null, null ];
         this.state = 'play'; // play | wait_ready | wait_fatality | fatality
-        this.fatalityId = null;
+        this.fatalityId = 'none'; // remove not good param - null
         this.winner   = null;
         this.roundTimer = null;
         this.startRound();
@@ -74,7 +74,7 @@ class Game {
         });
     }
 
-    fatality(user, combination)
+    fatality(user, resultFatality)
     {
         if (this.state !== 'wait_fatality') {
             this.log('unexpected fatality: ', user.name);
@@ -84,10 +84,15 @@ class Game {
             this.log('ignore fatality from not winner:', user.name);
             return this.json(user);
         }
-        this.fatalityId = decodeFatalityCombination(combination);
+        this.fatalityId = decodeFatalityCombination(resultFatality);
         this.log('fatality is', this.fatalityId);
         this.state = 'fatality';
         return this.json(user);
+    }
+
+    getFatalityResult( user ) 
+    {
+        return this.json(user);   
     }
 
     updateResults()
@@ -162,9 +167,9 @@ class Game {
     }
 
     startRound() {
-        //if (this.roundTimer !== null)
-        //   clearTimeout(this.roundTimer);
-        //this.roundTimer = setTimeout(() => this.roundTimeoutAlarm(), 10000);
+        if (this.roundTimer !== null)
+        clearTimeout(this.roundTimer);
+        this.roundTimer = setTimeout(() => this.roundTimeoutAlarm(), 10000);
     }
 
     roundTimeoutAlarm() {
@@ -206,12 +211,14 @@ function findWinnerIdx(choices)
 
 function decodeFatalityCombination(combinaiton)
 {
-    switch (combinaiton) {
-    case 'stone,stone,stone':
-        return 'stonehenge';
-    default:
+    switch( combinaiton ) {
+      case 'miss':
         return 'miss';
-    }
+      case 'done':
+        return 'done';        
+      default: 
+        return 'none';  
+    } 
 }
 
 module.exports = Game;
