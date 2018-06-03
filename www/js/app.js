@@ -169,15 +169,16 @@ const Client = {
   startFatality: ( result ) => {
 
     Client.gameStatus = 'wait-choice-fatality'
-    Client.timerEndFatality = setTimeout( Client.endFatality, 20000 );	
     startAnimationWait();
 
-    if ( result.winner === 'me' ) {	
-      Client.makeHashFatality();		
-      $( '.buttonsChoice' ).show();		
+    if ( result.winner === 'me' ) {
+      Client.timerEndFatality = setTimeout( () => { Client.postWinnerResultFatality('miss') }, 10000 );	      	
+      Client.makeHashFatality();
+      $( '.buttonsChoice' ).show();
     }
 
     if ( result.winner === 'enemy' ) {
+      Client.timerEndFatality = setTimeout( () => { Client.endFatality() }, 14000 );
       $( '#info' ).append( '<br/>wait Death...' );
       Client.loserWaitResultFatality();		
     }
@@ -227,6 +228,7 @@ const Client = {
   
     $.post( '/api/game/fatality?is=' + resultFatality )
       .then( function( result ) {
+        Client.gameStatus = 'none'
         Client.endFatality( result )	
       });		
   },
@@ -243,6 +245,7 @@ const Client = {
         } 
 
         if ( result.fatality != 'none' ) {
+          Client.gameStatus = 'none'
           Client.endFatality( result )	
         }	  
       })	
@@ -251,14 +254,20 @@ const Client = {
 
   endFatality: ( result ) => {		
 
-    clearTimeout( Client.timerEndFatality )
+    if ( Client.timerEndFatality !== null )  {
+      clearTimeout( Client.timerEndFatality )
+      Client.timerEndFatality = null
+    }
+
     $( '.buttonsChoice' ).hide();	
     stopAnimationWait();
 
-    if ( result.winner == 'me' && result.fatality == 'done' ) 	$('#info').append('<br/>Fatality #$%$$%%$ !!!!!!#@ !!!  <br/>');
-    if ( result.winner == 'me' && result.fatality == 'miss' ) 	$('#info').append('<br/>Fatality Crach :(  <br/>');	
-    if ( result.winner == 'enemy' && result.fatality == 'done' ) 	$('#info').append('<br/> BLOOOD MORE :< FATALITY DONE <br/>');
-    if ( result.winner == 'enemy' && result.fatality == 'miss' ) 	$('#info').append('<br/> Fatality Miss  <br/>');			
+    if ( result ) {     
+      if ( result.winner == 'me' && result.fatality == 'done' ) 	$('#info').append('<br/>Fatality #$%$$%%$ !!!!!!#@ !!!  <br/>');
+      if ( result.winner == 'me' && result.fatality == 'miss' ) 	$('#info').append('<br/>Fatality Crach :(  <br/>');	
+      if ( result.winner == 'enemy' && result.fatality == 'done' ) 	$('#info').append('<br/> BLOOOD MORE :< FATALITY DONE <br/>');
+      if ( result.winner == 'enemy' && result.fatality == 'miss' ) 	$('#info').append('<br/> Fatality Miss  <br/>');
+    }
 
     Client.endBattle();
   },
@@ -266,9 +275,17 @@ const Client = {
 
   endBattle: () => {
 
-    $('#info').append('<br/>EndBattle'); 
+    $('#info').append('<br/>EndBattle<br/>');
+    setTimeout( Client.clearScreen, 2000 )
+   
+  },
+
+
+  clearScreen: () => {
+
+    $('#info').html('')
     Client.connectFirst() 
-  }
+  } 
 }; 
 
 

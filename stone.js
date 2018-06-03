@@ -95,7 +95,11 @@ app.post('/api/game/isFatalityDoneForLoser', function( req, res ) {
         return;
     if (!user.game)
         return res.status(404).send();       
-    res.send( user.game.getFatalityResult(user) );   
+    res.send( user.game.getFatalityResult(user) );
+    
+    if ( user.game.getFatalityResult(user).fatality != 'none' ) {
+        user.game.destroy()
+    }    
 });
 
 function findUser(req, res)

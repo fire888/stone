@@ -87,7 +87,6 @@ class Game {
         this.fatalityId = decodeFatalityCombination(resultFatality);
         this.log('fatality is', this.fatalityId);
         this.state = 'fatality';//!!!!!!!!!
-        console.log('-----------FATALITY-- END GAME')
         return this.json(user);
     }
 
@@ -139,8 +138,8 @@ class Game {
         this.choices[index] = null;
         if (this.choices[0] === null && this.choices[1] === null) {
             if (this.state == 'fatality') {
-                this.destroy();
-                return { state: 'over' };
+            //    this.destroy();
+            //    return { state: 'over' };
             } else {
                 this.state = 'play';
                 this.startRound();
