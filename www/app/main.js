@@ -9,14 +9,15 @@
 
 /** GAME VARS *********************************/
 
-let intervalListenChoiceEnemy = null,
-timerRound = null,
+let 
+intervalListenChoiceEnemy = null,
+timerRoundEnd = null,
 timerUpdateGameResult = null,
+timerEndFatality = null,
   
 gameStatus = 'none',
-randomFatalityHash = null,	
-timerEndFatality = null 
-
+randomFatalityHash = null	
+ 
 
 const client = new Client()
 const ctx = new Ctx() 
@@ -90,7 +91,7 @@ const startRound = () => {
   startAnimationWait()
   $( '.buttonsChoice' ).show()	
   intervalListenChoiceEnemy = setInterval( waitEnemyChoice, 1000 )
-  timerRound = setTimeout( endTimerRound, 7000 )		
+  timerRoundEnd = setTimeout( endTimerRound, 7000 )		
 }
     
   
