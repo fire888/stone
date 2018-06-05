@@ -17,7 +17,9 @@ gameStatus = 'none',
 randomFatalityHash = null,	
 timerEndFatality = null 
 
+
 const client = new Client()
+const ctx = new Ctx() 
 
 
 /** INIT GAME *******************************/
