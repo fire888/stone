@@ -1,6 +1,12 @@
-# stone_back
+
+# STONE-SCISSORS-PAPER 
+
+About
+------------   
+Online browser game on *nodejs* and *pixijs*.  
+  
+  
+![pic](https://raw.githubusercontent.com/fire888/stone2/master/www/app/styles/screenshot.jpg)  
 
 
-[![Build Status](https://travis-ci.org/poroh/stone_back.svg?branch=master)](https://travis-ci.org/poroh/stone_back) [![Coverage Status](https://coveralls.io/repos/github/poroh/stone_back/badge.svg)](https://coveralls.io/github/poroh/stone_back)
-
-
+[Test play](http://stone.e2e4d7d5.ru)
