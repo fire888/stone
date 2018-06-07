@@ -4,7 +4,7 @@
   "description": "Stone Scissors Paper",
   "main": "stone.js",
   "scripts": {
-    "backend": "node stone.js",
+    "start": "node stone.js",
     "lint": "eslint ./",
     "test": "./node_modules/.bin/mocha",
     "cover": "istanbul cover _mocha"
