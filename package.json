@@ -5,6 +5,7 @@
   "main": "stone.js",
   "scripts": {
     "start": "node stone.js",
+    "dev": "nodemon stone.js", 
     "lint": "eslint ./",
     "test": "./node_modules/.bin/mocha",
     "cover": "istanbul cover _mocha",
@@ -30,6 +31,7 @@
     "eslint": "^4.11.0",
     "istanbul": "^0.4.5",
     "mocha": "^2.4.5",
+    "nodemon": "^1.17.5",
     "rollup": "^0.60.1",
     "rollup-plugin-babel": "^3.0.4",
     "rollup-plugin-uglify": "^4.0.0",

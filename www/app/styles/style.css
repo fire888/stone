@@ -1,0 +1,18 @@
+
+body {   
+    background-color: black;
+    color: #a0f050;
+}
+
+#ui {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 100;
+}
+canvas {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 0;    
+}  

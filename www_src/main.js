@@ -1,17 +1,25 @@
 
 /*******************************************************************;
  *              _        *  Project        :  STONE    
- *        _____/\_\      * -----------------------------------------;                
+ *        _____/\_\      * -----------------------------------------;
  *       /\   / / /      *  Program name   :  main
- *    __/_ \  \/_/ \     * -----------------------------------------;                 
+ *    __/_ \  \/_/ \     * -----------------------------------------;
  *   /\___\ \_______\    *  Author         :  www.otrisovano.ru
- *   \/___/ /  __   /    * -----------------------------------------;                 
+ *   \/___/ /  __   /    * -----------------------------------------;
  *      \  /  /\ \ /     *  Date           :  01.11.2017 
- *       \/___\ \_\      * -----------------------------------------;                
+ *       \/___\ \_\      * -----------------------------------------;
  *             \/_/      *  Purpose        :  game 2d
  *                       * -----------------------------------------;
  *                       *  License        :  MIT         
  *******************************************************************/
+
+import Ui from './Ui' 
+import Client from './Client'
+import Ctx from './Ctx'
+
+const ui = new Ui()
+const client = new Client()
+const ctx = new Ctx()
 
 
 /** GAME VARS ******************************************************/
@@ -24,26 +32,22 @@ gameStatus = 'none',
 randomFatalityHash = null,	
 timerEndFatality = null 
 
-import Client from './Client'
-const client = new Client()
-import Ctx from './Ctx'
-const ctx = new Ctx()
-
 
 /** INIT GAME ******************************************************/
 
 const init = () => {	
-  return new Promise((resolve) => {  
-      ctx.initAnimation(resolve)
+  return new Promise(( resolve ) => {
+      ctx.initAnimation( resolve )
   })
   .then( () => {
-    return new Promise((resolve) => { 
+    return new Promise(( resolve ) => { 
+      ui.init()      
       ctx.draw()
       resolve()
     })
   })
   .then( () => {
-    return new Promise((resolve) => {
+    return new Promise(( resolve ) => {
       initButtonSearchEnemy()
       initButtonsChoiceHero()    
       resolve()
@@ -51,37 +55,35 @@ const init = () => {
   })
   .then(() => {
     connectFirst()
+    ctx.setStartSign()
   })
 }
   
 
 const initButtonSearchEnemy = () => {
-  $( '#buttonSearch' ).hide()     
-  $( '#buttonSearch' ).click(() => {
-    $( '#info' ).append( 'Searching enemy:...' )
-    $( '#buttonSearch' ).hide()
-    startAnimationWait()
+  ui.clickButtonSearchEnemy(() => {
+    ctx.removeStartSign()
+    ctx.startHeroWaitAnimation()
+    ui.startAnimationWait()
     apiFindEnemy()
-  })   
+  })       
 }  
   
   
 const initButtonsChoiceHero = () => {
-  $( '.buttonsChoice' ).hide()     
-  $( '.buttonsChoice' ).click(( e ) => {
-    if ( gameStatus != 'wait-choice-fatality' ) {			
-      $('.buttonsChoice').hide();			
+  ui.clickButtonsChoiceHero(( e ) => {
+    if ( checkIsButtonPushForNotFatality() ) {	
       sendHeroChoice( e.target.value )
-    } else {
-      checkFatalityDone( e.target.value, () => {} )
-    }				
-  })    
+      return 
+    }   
+    checkFatalityDone( e.target.value )        		
+  }, checkIsButtonPushForNotFatality )     
 }  
     
     
 const connectFirst = () => {	  
   client.getSignIfConnectFirst(( serverResult ) => {
-    $( '#info' ).append( 'Connecting done! <br/>' + 'your name: ' + serverResult.name + line )
+    $( '#info' ).append( 'Connecting done! <br/>' + 'your name: ' + serverResult.name + ui.line )
     $( '#buttonSearch' ).show();		    
   })
 }
@@ -90,7 +92,7 @@ const connectFirst = () => {
 const apiFindEnemy = () => {
   client.sendSignToFindEnemy(( serverResult ) => {
     if ( serverResult.state === 'playing' ) {
-      stopAnimationWait()
+      ui.stopAnimationWait()
       meetingPlayers()					
     } else { 
       setTimeout( apiFindEnemy, 500 ); 
@@ -101,19 +103,21 @@ const apiFindEnemy = () => {
     
 const meetingPlayers = () => {
   client.getSignAboutUpdateGameResult(( serverResult ) => {
-    $( '#info' ).append( 'ok.' + line + 'Find Enemy: ' + serverResult.enemy.name)
-    startRound()	    
+    $( '#info' ).append( 'ok.' + ui.line + 'Find Enemy: ' + serverResult.enemy.name)
+    ctx.stopHeroWaitAnimation()
+    ctx.prepearCanvasToFight( () => { 
+      startRound()
+    })	    
   }) 
 }
-
-
 
 
 /** FUNCTIONS PLAY ROUND *******************************************/
   
 const startRound = () => {
-  $( '#info' ).append( line + 'Round:<br/>' )
-  startAnimationWait()
+  $( '#info' ).append( ui.line + 'Round:<br/>' )
+  ui.startAnimationWait()
+  ctx.startAnimationChoice( true, true )
   $( '.buttonsChoice' ).show()	
   intervalListenChoiceEnemy = setInterval( waitEnemyChoice, 1000 )
   timerRound = setTimeout( endTimerRound, 7000 )		
@@ -123,6 +127,7 @@ const startRound = () => {
 const waitEnemyChoice = () => {
   client.getSignAboutUpdateGameResult(( serverResult ) => {
     if ( serverResult.enemyMadeChoice ) {	
+      ctx.stopAnimationChoice( false, true )
       clearInterval( intervalListenChoiceEnemy )		
       $( '#info' ).append( 'Enemy made choice.' )
     }
@@ -132,6 +137,7 @@ const waitEnemyChoice = () => {
     
 const sendHeroChoice = ( choice ) => { 
   $( '#info' ).append( 'You: ' + choice + '<br/>' )	
+  ctx.stopAnimationChoice( true, false )
   client.sendHeroChoice( choice, ( serverResult ) => {
     updateGameResult( serverResult )
   }) 
@@ -150,13 +156,17 @@ const updateGameResult = ( serverResult ) => {
   if ( serverResult.enemyMadeChoice ) {	
     clearTimeout( timerUpdateGameResult )
     clearTimeout( timerRound )
-    stopAnimationWait()
+    ui.stopAnimationWait()
     $('#info').append(
       '<br/>Your: ' + serverResult.results[serverResult.results.length-1].myChoice + 
       ' / Enemy: ' + serverResult.results[serverResult.results.length-1].enemyChoice + 
       ' / Winner: ' + serverResult.results[serverResult.results.length-1].winner + 
       '<br/>'
-    )		
+    )
+    ctx.drawPlayersChoices( 
+        serverResult.results[serverResult.results.length-1].myChoice,
+        serverResult.results[serverResult.results.length-1].enemyChoice         
+      )
     setTimeout( nextRound, 2000 )
   } else {
     timerUpdateGameResult = setTimeout( () => {
@@ -186,10 +196,19 @@ const nextRound = () => {
 
   
 /** FUNCTIONS END GAME *********************************************/
-  
+
+const checkIsButtonPushForNotFatality = () => {
+  if (  gameStatus != 'wait-choice-fatality' ) {
+    return true
+  } else {
+    return false
+  }
+} 
+
+
 const startFatality = ( serverResult ) => {
   gameStatus = 'wait-choice-fatality'
-  startAnimationWait()
+  ui.startAnimationWait()
   if ( serverResult.winner === 'me' ) {
     timerEndFatality = setTimeout( () => { 
         postWinnerResultFatality( 'miss' ) 
@@ -270,7 +289,7 @@ const endFatality = serverResult => {
     timerEndFatality = null
   }
   $( '.buttonsChoice' ).hide();	
-  stopAnimationWait();
+  ui.stopAnimationWait();
   if ( serverResult ) {     
     if ( serverResult.winner == 'me' && serverResult.fatality == 'done' ) 	$('#info').append('<br/>Fatality #$%$$%%$ !!!!!!#@ !!!  <br/>');
     if ( serverResult.winner == 'me' && serverResult.fatality == 'miss' ) 	$('#info').append('<br/>Fatality Crach :(  <br/>');	
@@ -291,36 +310,7 @@ const clearScreen = () => {
   $('#info').html('')
   connectFirst() 
 } 
- 
-  
-  
 
-/*******************************************************************;
- *  DRAW SCREEN FUNCTIONS
- *******************************************************************/
-  
-const line = '<br/>--------------------------------------------------------------<br/>'; 
-let intervalAnimation = false; 
-  
-  
-const startAnimationWait = () => {
-    $('<div/>',{ 'id' : 'loadBar' }).appendTo('#info');	
-    intervalAnimation = setInterval( waitProgress, 1000 );
-}
-  
-  
-const waitProgress = () => { 
-    $('#loadBar').append('*');	
-}
-  
-  
-const stopAnimationWait = () => {
-    clearInterval( intervalAnimation );
-    $('#loadBar').remove();	
-}
-  
-  
-  
   
 /*******************************************************************;
  *  INIT GAME
