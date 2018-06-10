@@ -24,19 +24,37 @@ gameStatus = 'none',
 randomFatalityHash = null,	
 timerEndFatality = null 
 
+import Client from './Client'
 const client = new Client()
-//const ctx = new Ctx() 
+import Ctx from './Ctx'
+const ctx = new Ctx()
 
 
 /** INIT GAME ******************************************************/
 
-const init = () => { 
-  initButtonSearchEnemy()
-  initButtonsChoiceHero()
-  connectFirst()
+const init = () => {	
+  return new Promise((resolve) => {  
+      ctx.initAnimation(resolve)
+  })
+  .then( () => {
+    return new Promise((resolve) => { 
+      ctx.draw()
+      resolve()
+    })
+  })
+  .then( () => {
+    return new Promise((resolve) => {
+      initButtonSearchEnemy()
+      initButtonsChoiceHero()    
+      resolve()
+    })
+  })
+  .then(() => {
+    connectFirst()
+  })
 }
   
-  
+
 const initButtonSearchEnemy = () => {
   $( '#buttonSearch' ).hide()     
   $( '#buttonSearch' ).click(() => {
@@ -87,6 +105,8 @@ const meetingPlayers = () => {
     startRound()	    
   }) 
 }
+
+
 
 
 /** FUNCTIONS PLAY ROUND *******************************************/

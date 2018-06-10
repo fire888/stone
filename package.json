@@ -7,23 +7,32 @@
     "start": "node stone.js",
     "lint": "eslint ./",
     "test": "./node_modules/.bin/mocha",
-    "cover": "istanbul cover _mocha"
+    "cover": "istanbul cover _mocha",
+    "build": "rollup -c",
+    "build-uglify": "uglifyjs www_merge/main.js -cm > www/app/main.min.js"
   },
   "pre-commit": [
     "lint"
   ],
   "author": "Dmitry Poroh",
   "dependencies": {
-    "express": "^4.16.2",
     "cookie-parser": "^1.4.3",
+    "express": "^4.16.2",
     "random-name": "^0.1.2"
   },
   "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-preset-es2015": "^6.24.1",
     "chai": "^3.5.0",
     "chai-http": "^2.0.1",
     "coveralls": "^3.0.0",
     "eslint": "^4.11.0",
     "istanbul": "^0.4.5",
-    "mocha": "^2.4.5"
+    "mocha": "^2.4.5",
+    "rollup": "^0.60.1",
+    "rollup-plugin-babel": "^3.0.4",
+    "rollup-plugin-uglify": "^4.0.0",
+    "uglify-js": "^3.4.0"
   }
 }

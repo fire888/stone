@@ -14,21 +14,23 @@
  *******************************************************************/
 
 
-var renderer = new PIXI.CanvasRenderer(window.innerWidth, window.innerHeight);
+class Ctx {
+  constructor() {
+    this.renderer = new PIXI.CanvasRenderer( window.innerWidth, window.innerHeight )
+    document.body.appendChild( this.renderer.view )
+    this.stage = new PIXI.Stage     
+  }
 
-document.body.appendChild(renderer.view);
+  initAnimation( onInit ) {
+    PIXI.loader
+      .add( 'app/imgs/signs.json' )
+      .load(() => { 
+        this.onAssetsLoaded( onInit ) 
+      })
+  }
 
-var stage = new PIXI.Stage;
-
-PIXI.loader
-    .add('app/imgs/signs.json')
-    .load(onAssetsLoaded);
-
-function onAssetsLoaded()
-{
-
-    /** ANIMATION CHOICE */
-
+  onAssetsLoaded( onInit ) {
+    
     var framesWait = []
     for ( var i = 1; i < 8; i ++ ) {
       var val = i < 10 ? '0' + i : i;
@@ -41,8 +43,9 @@ function onAssetsLoaded()
     waitHero.anchor.set(0.5);
     waitHero.animationSpeed = 0.12;
     waitHero.play();
-    stage.addChild( waitHero );
+    this.stage.addChild( waitHero );
 
+    /*
     let animEnemy = new PIXI.extras.AnimatedSprite( framesWait );
     animEnemy.x = window.innerWidth/2;   
     animEnemy.y = 200
@@ -50,12 +53,13 @@ function onAssetsLoaded()
     animEnemy.rotation = Math.PI
     animEnemy.animationSpeed = 0.15;
     animEnemy.play()
-    stage.addChild(animEnemy);  
-    
+    this.stage.addChild(animEnemy);  
+    */
     
     /** ANIMATION COMA */
 
-    var framesComa = []
+    /*
+    let framesComa = []
     for ( i = 1; i < 11; i ++ ) {
       val = i < 10 ? '0' + i : i;
       framesComa.push( PIXI.Texture.fromFrame( 'coma' + val + '.png' ) )
@@ -66,12 +70,13 @@ function onAssetsLoaded()
     comaHero.anchor.set(0.5);
     comaHero.animationSpeed = 0.12;
     comaHero.play();
-    stage.addChild( comaHero ); 
-    
+    this.stage.addChild( comaHero ); 
+    */
 
     /** ANIMATION CHOICE */
 
-    var framesChoice = []
+    /*
+    let framesChoice = []
     for ( i = 1; i < 7; i ++ ) {
       val = i < 10 ? '0' + i : i;
       framesChoice.push( PIXI.Texture.fromFrame( 'choice' + val + '.png' ) )
@@ -82,12 +87,13 @@ function onAssetsLoaded()
     choiceHero.anchor.set(0.5);
     choiceHero.animationSpeed = 0.12;
     choiceHero.play();
-    stage.addChild( choiceHero );   
-    
+    this.stage.addChild( choiceHero );   
+    */
 
     /** ANIMATION Stone */
 
-    var framesStone = []
+    /*
+    let framesStone = []
     for ( i = 1; i < 4; i ++ ) {
       val = i < 10 ? '0' + i : i;
       framesStone.push( PIXI.Texture.fromFrame( 'stone' + val + '.png' ) )
@@ -98,12 +104,12 @@ function onAssetsLoaded()
     stoneHero.anchor.set(0.5);
     stoneHero.animationSpeed = 0.05;
     stoneHero.play();
-    stage.addChild( stoneHero );
-    
+    this.stage.addChild( stoneHero );
+    */
 
     /** ANIMATION PAPER */
-
-    var framesPaper = []
+    /* 
+    let framesPaper = []
     for ( i = 2; i < 5; i ++ ) {
       val = i < 10 ? '0' + i : i;
       framesPaper.push( PIXI.Texture.fromFrame( 'paper' + val + '.png' ) )
@@ -114,12 +120,12 @@ function onAssetsLoaded()
     paperHero.anchor.set(0.5);
     paperHero.animationSpeed = 0.05;
     paperHero.play();
-    stage.addChild( paperHero );
-    
+    this.stage.addChild( paperHero );
+    */
 
     /** ANIMATION SCISSORS */
-
-    var framesScissors = []
+    /*
+    let framesScissors = []
     for ( i = 2; i < 5; i ++ ) {
       val = i < 10 ? '0' + i : i;
       framesScissors.push( PIXI.Texture.fromFrame( 'scissors' + val + '.png' ) )
@@ -130,12 +136,12 @@ function onAssetsLoaded()
     scissorsHero.anchor.set(0.5);
     scissorsHero.animationSpeed = 0.05;
     scissorsHero.play();
-    stage.addChild( scissorsHero );
-    
+    this.stage.addChild( scissorsHero );
+    */
 
     /** ANIMATION SIGNS */
-
-    var framesSign = []
+   /* 
+   let framesSign = []
     for ( i = 0; i < 13; i ++ ) {
       val = i < 10 ? '0' + i : i;
       framesSign.push( PIXI.Texture.fromFrame( 'sign' + val + '.png' ) )
@@ -146,9 +152,44 @@ function onAssetsLoaded()
     signHero.anchor.set(0.5);
     signHero.animationSpeed = 0.05;
     signHero.play();
-    stage.addChild( signHero );      
+    this.stage.addChild( signHero );
+    */
+    onInit()
+  }
 
+  draw() { 
+    this.renderer.render( this.stage )
+    requestAnimationFrame(() => { 
+      this.draw() 
+    })
+  }
+}   
 
+/*************************************************************** */
+/*
+const loadFatality = () => {
+  PIXI.loader
+  .add('app/imgs/fat01.json')
+  .load(onAssetsLoadedFatality)
+}
+
+const onAssetsLoadedFatality = () => {
+  */ 
+    /** FATALITY HERO  */
+    
+ /*   let framesSign = []
+
+    for ( i = 0; i < 8; i ++ ) {
+      val = i < 10 ? '0' + i : i;
+      framesSign.push( PIXI.Texture.fromFrame( 'fat01_' + val + '.png' ) )
+    }
+    let fatHero = new PIXI.extras.AnimatedSprite( framesSign )
+    fatHero.x = window.innerWidth/2 + 400;
+    fatHero.y = window.innerHeight/2 + 50;
+    fatHero.anchor.set(0.5);
+    fatHero.animationSpeed = 0.05;
+    fatHero.play();
+    stage.addChild( fatHero );    
 }
 
 
@@ -161,7 +202,6 @@ zombie.position.x = 200
 zombie.position.y = 300
 
 stage.addChild(zombie)
+*/
+export default Ctx
 
-function draw() { renderer.render(stage); requestAnimationFrame(draw); }
-
-draw(); 

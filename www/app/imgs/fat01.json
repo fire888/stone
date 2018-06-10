@@ -1,0 +1,91 @@
+{"frames": {
+"fat01_00.png":
+{
+	"filename": "fat01_00.png",
+	"frame": {"x":346,"y":785,"w":323,"h":859},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":61,"y":87,"w":323,"h":859},
+	"sourceSize": {"w":384,"h":956},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"fat01_01.png":
+{
+	"filename": "fat01_01.png",
+	"frame": {"x":1,"y":868,"w":343,"h":803},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":31,"y":116,"w":343,"h":803},
+	"sourceSize": {"w":384,"h":956},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"fat01_02.png":
+{
+	"filename": "fat01_02.png",
+	"frame": {"x":671,"y":731,"w":300,"h":715},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":31,"y":127,"w":300,"h":715},
+	"sourceSize": {"w":384,"h":956},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"fat01_03.png":
+{
+	"filename": "fat01_03.png",
+	"frame": {"x":671,"y":1448,"w":320,"h":510},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":91,"w":320,"h":510},
+	"sourceSize": {"w":384,"h":956},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"fat01_04.png":
+{
+	"filename": "fat01_04.png",
+	"frame": {"x":663,"y":1,"w":320,"h":728},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":91,"w":320,"h":728},
+	"sourceSize": {"w":384,"h":956},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"fat01_05.png":
+{
+	"filename": "fat01_05.png",
+	"frame": {"x":336,"y":1,"w":325,"h":782},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":91,"w":325,"h":782},
+	"sourceSize": {"w":384,"h":956},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"fat01_06.png":
+{
+	"filename": "fat01_06.png",
+	"frame": {"x":1,"y":1,"w":333,"h":865},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":91,"w":333,"h":865},
+	"sourceSize": {"w":384,"h":956},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"fat01_07.png":
+{
+	"filename": "fat01_07.png",
+	"frame": {"x":346,"y":1646,"w":320,"h":329},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":91,"w":320,"h":329},
+	"sourceSize": {"w":384,"h":956},
+	"pivot": {"x":0.5,"y":0.5}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "fat01.png",
+	"format": "RGBA8888",
+	"size": {"w":992,"h":1976},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:c1af7ede280ee13e348a035f256a42ee:b83a11cdc7f0e182fb564b53d2432f5a:0e0b374f14fd087ff52219b13472ede6$"
+}
+}
