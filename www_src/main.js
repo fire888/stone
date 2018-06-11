@@ -27,17 +27,17 @@ const ctx = new Ctx()
 let intervalListenChoiceEnemy = null,
 timerRound = null,
 timerUpdateGameResult = null,
+timerEndFatality = null,
   
 gameStatus = 'none',
-randomFatalityHash = null,	
-timerEndFatality = null 
+randomFatalityHash = null
 
 
 /** INIT GAME ******************************************************/
 
 const init = () => {	
   return new Promise(( resolve ) => {
-      ctx.initAnimation( resolve )
+      ctx.loadAssets( resolve )
   })
   .then( () => {
     return new Promise(( resolve ) => { 
@@ -46,7 +46,7 @@ const init = () => {
       resolve()
     })
   })
-  .then( () => {
+  .then(() => {
     return new Promise(( resolve ) => {
       initButtonSearchEnemy()
       initButtonsChoiceHero()    
@@ -61,9 +61,13 @@ const init = () => {
   
 
 const initButtonSearchEnemy = () => {
+
   ui.clickButtonSearchEnemy(() => {
+    ctx.removeGoodSign( true, false )
+    ctx.removeBadSign( true, false )  
+    ctx.removeAnimationFatality()
     ctx.removeStartSign()
-    ctx.startHeroWaitAnimation()
+    ctx.startAnimationWait( true, false )
     ui.startAnimationWait()
     apiFindEnemy()
   })       
@@ -71,6 +75,7 @@ const initButtonSearchEnemy = () => {
   
   
 const initButtonsChoiceHero = () => {
+
   ui.clickButtonsChoiceHero(( e ) => {
     if ( checkIsButtonPushForNotFatality() ) {	
       sendHeroChoice( e.target.value )
@@ -81,15 +86,17 @@ const initButtonsChoiceHero = () => {
 }  
     
     
-const connectFirst = () => {	  
+const connectFirst = () => {	 
+
   client.getSignIfConnectFirst(( serverResult ) => {
-    $( '#info' ).append( 'Connecting done! <br/>' + 'your name: ' + serverResult.name + ui.line )
-    $( '#buttonSearch' ).show();		    
+    ui.setConnectionMessage( serverResult.name )
+    ui.showButtonSearch()	    
   })
 }
     
   
 const apiFindEnemy = () => {
+
   client.sendSignToFindEnemy(( serverResult ) => {
     if ( serverResult.state === 'playing' ) {
       ui.stopAnimationWait()
@@ -102,9 +109,10 @@ const apiFindEnemy = () => {
     
     
 const meetingPlayers = () => {
+
   client.getSignAboutUpdateGameResult(( serverResult ) => {
-    $( '#info' ).append( 'ok.' + ui.line + 'Find Enemy: ' + serverResult.enemy.name)
-    ctx.stopHeroWaitAnimation()
+    ui.setMessageSearchEnemy( serverResult.enemy.name )
+    ctx.stopAnimationWait( true, false )
     ctx.prepearCanvasToFight( () => { 
       startRound()
     })	    
@@ -115,29 +123,36 @@ const meetingPlayers = () => {
 /** FUNCTIONS PLAY ROUND *******************************************/
   
 const startRound = () => {
-  $( '#info' ).append( ui.line + 'Round:<br/>' )
+
+  ui.addLine()
   ui.startAnimationWait()
+  ui.showButtonsChoice()  
   ctx.startAnimationChoice( true, true )
-  $( '.buttonsChoice' ).show()	
+
   intervalListenChoiceEnemy = setInterval( waitEnemyChoice, 1000 )
   timerRound = setTimeout( endTimerRound, 7000 )		
 }
     
   
 const waitEnemyChoice = () => {
+
   client.getSignAboutUpdateGameResult(( serverResult ) => {
     if ( serverResult.enemyMadeChoice ) {	
+      
       ctx.stopAnimationChoice( false, true )
+      ui.setMessageEnemyMadeChoice()
+
       clearInterval( intervalListenChoiceEnemy )		
-      $( '#info' ).append( 'Enemy made choice.' )
     }
   })
 }		
     
     
 const sendHeroChoice = ( choice ) => { 
-  $( '#info' ).append( 'You: ' + choice + '<br/>' )	
+
+  ui.setMessageChoiceHero( choice )
   ctx.stopAnimationChoice( true, false )
+
   client.sendHeroChoice( choice, ( serverResult ) => {
     updateGameResult( serverResult )
   }) 
@@ -145,6 +160,7 @@ const sendHeroChoice = ( choice ) => {
 
 
 const endTimerRound = () => { 
+ 
   clearInterval( intervalListenChoiceEnemy )
   client.sendHeroChoice( 'timeout', ( serverResult ) => {
     updateGameResult( serverResult )
@@ -153,21 +169,17 @@ const endTimerRound = () => {
 
 
 const updateGameResult = ( serverResult ) => {	
+ 
   if ( serverResult.enemyMadeChoice ) {	
+
     clearTimeout( timerUpdateGameResult )
     clearTimeout( timerRound )
     ui.stopAnimationWait()
-    $('#info').append(
-      '<br/>Your: ' + serverResult.results[serverResult.results.length-1].myChoice + 
-      ' / Enemy: ' + serverResult.results[serverResult.results.length-1].enemyChoice + 
-      ' / Winner: ' + serverResult.results[serverResult.results.length-1].winner + 
-      '<br/>'
-    )
-    ctx.drawPlayersChoices( 
-        serverResult.results[serverResult.results.length-1].myChoice,
-        serverResult.results[serverResult.results.length-1].enemyChoice         
-      )
-    setTimeout( nextRound, 2000 )
+    ui.drawRoundResult( serverResult.results[ serverResult.results.length-1 ] )       
+    ctx.drawPlayersChoices( serverResult.results[ serverResult.results.length-1 ] )
+
+    setTimeout( nextRound, 4000 )
+
   } else {
     timerUpdateGameResult = setTimeout( () => {
       client.getSignAboutUpdateGameResult(( serverResult ) => {
@@ -179,7 +191,11 @@ const updateGameResult = ( serverResult ) => {
 
 
 const nextRound = () => {
+
   client.sendReadyForNextRound(( serverResult ) => {
+    
+    ctx.removePlayersChoices()
+
     if ( serverResult.state === 'over') {
       endBattle()
     }
@@ -198,6 +214,7 @@ const nextRound = () => {
 /** FUNCTIONS END GAME *********************************************/
 
 const checkIsButtonPushForNotFatality = () => {
+
   if (  gameStatus != 'wait-choice-fatality' ) {
     return true
   } else {
@@ -207,28 +224,44 @@ const checkIsButtonPushForNotFatality = () => {
 
 
 const startFatality = ( serverResult ) => {
+
   gameStatus = 'wait-choice-fatality'
+
+  ui.setMeccageStartFatality()
   ui.startAnimationWait()
+
   if ( serverResult.winner === 'me' ) {
+        
+    ui.showButtonsChoice()
+    ctx.startAnimationWait( true, false )
+    ctx.startAnimationComa( false, true )
+    
+    makeHashFatality()
+
     timerEndFatality = setTimeout( () => { 
-        postWinnerResultFatality( 'miss' ) 
-      }, 10000 );	      	
-    makeHashFatality();
-    $( '.buttonsChoice' ).show();
+      postWinnerResultFatality( 'miss' ) 
+    }, 10000 )    
   }
+
   if ( serverResult.winner === 'enemy' ) {
+
+    ui.hideButtonsChoice()  
+    ui.setMessBeforeFatality()
+    ctx.startAnimationWait( false, true )
+    ctx.startAnimationComa( true, false )  
+    
+    loserWaitResultFatality()
+
     timerEndFatality = setTimeout(() => { 
-        endFatality() 
-      }, 14000 )
-    $( '#info' ).append( '<br/>wait Death...' )
-    loserWaitResultFatality()		
+      endFatality() 
+    }, 14000 )    
   }
 }
   
   
-const makeHashFatality = () => {		
+const makeHashFatality = () => {	
+
   randomFatalityHash = [];
-  $( '#info' ).append( '<br/>Fatality: ' );
   for ( let i = 0; i < 5; i ++ ) {
     let n = Math.floor( Math.random()*3 );
     if ( n == 0 ) {
@@ -245,24 +278,27 @@ const makeHashFatality = () => {
 
 
 const setValueInHash = value => {
+
   randomFatalityHash.push( value )
-  $('#info').append( ' ' + value )
+  ui.addValueFatality( value ) 
 }    
   
   
 const checkFatalityDone = choice => {
+
   if ( choice == randomFatalityHash[0] ) {		
     randomFatalityHash.splice( 0, 1 );
     if ( randomFatalityHash.length == 0 ) {
-      postWinnerResultFatality( 'done' )
+      postWinnerResultFatality( 'done' )    
     }
   } else {
-    postWinnerResultFatality( 'miss' )
+    postWinnerResultFatality( 'miss' )       
   } 	 			   	
 }
   
   
 const postWinnerResultFatality = resultFatality => {
+
   client.postWinnerResultFatality( resultFatality, ( serverResult ) => {
     gameStatus = 'none'
     endFatality( serverResult )
@@ -271,6 +307,7 @@ const postWinnerResultFatality = resultFatality => {
   
     
 const loserWaitResultFatality = () => {
+
   client.loserWaitResultFatality(( serverResult ) => {
     if ( serverResult.fatality == 'none' ) {
       setTimeout( loserWaitResultFatality, 300 )
@@ -283,38 +320,59 @@ const loserWaitResultFatality = () => {
 }  
 
 
-const endFatality = serverResult => {		
+const endFatality = serverResult => {	
+
   if ( timerEndFatality !== null )  {
     clearTimeout( timerEndFatality )
-    timerEndFatality = null
+    timerEndFatality = null     
   }
-  $( '.buttonsChoice' ).hide();	
-  ui.stopAnimationWait();
+
+  ctx.stopAnimationWait( true, true )
+  ctx.stopAnimationComa( true, true )
+  ui.stopAnimationWait()   
+  ui.hideButtonsChoice()
+
   if ( serverResult ) {     
-    if ( serverResult.winner == 'me' && serverResult.fatality == 'done' ) 	$('#info').append('<br/>Fatality #$%$$%%$ !!!!!!#@ !!!  <br/>');
-    if ( serverResult.winner == 'me' && serverResult.fatality == 'miss' ) 	$('#info').append('<br/>Fatality Crach :(  <br/>');	
-    if ( serverResult.winner == 'enemy' && serverResult.fatality == 'done' ) 	$('#info').append('<br/> BLOOOD MORE :< FATALITY DONE <br/>');
-    if ( serverResult.winner == 'enemy' && serverResult.fatality == 'miss' ) 	$('#info').append('<br/> Fatality Miss  <br/>');
+    if ( serverResult.winner == 'me' && serverResult.fatality == 'done' ) {
+      ui.setMessageEnd('Fatality #$%$$%%$ !!!!!!#@ !!!')
+      ctx.startAnimationFatality( true )
+    }
+    if ( serverResult.winner == 'me' && serverResult.fatality == 'miss' ) {
+      ui.setMessageEnd('Fatality Crach :( ')
+      ctx.addBadSign( true, false )
+      ctx.addGoodSign( false, true )      
+    }  
+    if ( serverResult.winner == 'enemy' && serverResult.fatality == 'done' ) { 
+      ui.setMessageEnd('BLOOOD MORE :< FATALITY DONE ')
+      ctx.startAnimationFatality( false )      
+    }    
+    if ( serverResult.winner == 'enemy' && serverResult.fatality == 'miss' ) {      
+      ui.setMessageEnd(' Fatality Miss  ')
+      ctx.addBadSign( false, true )
+      ctx.addGoodSign( true, false )       
+    }
   }
-  endBattle()
+
+  endBattle()  
 }
   
 
 const endBattle = () => {
-  $('#info').append('<br/>EndBattle<br/>');
+
   setTimeout( clearScreen, 2000 )
 }
   
   
 const clearScreen = () => {
-  $('#info').html('')
+
+  ctx.removeGoodSign( false, true )
+  ctx.removeBadSign( false, true )  
+  ui.clearScreen()
   connectFirst() 
 } 
 
   
-/*******************************************************************;
- *  INIT GAME
- *******************************************************************/
-  
+/** START INIT *****************************************************/
+
 init()
 

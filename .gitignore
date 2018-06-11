@@ -59,4 +59,8 @@ typings/
 
 # Temp merged js
 www_merge*
+message
+messages
+package-lock.json
+
 
