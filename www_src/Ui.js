@@ -81,7 +81,7 @@ class Ui {
 
   setMeccageStartFatality() {
 
-    $( '#info' ).append( '<br/>Fatality: ' );
+    $( '#info' ).append( '<br/>Fatality: ' )
   }
     
   
@@ -95,77 +95,47 @@ class Ui {
   }
 
 
-  showButtonSearch() {
-
-    $( '#buttonSearch' ).show()
-  }  
+  showButtonSearch() { $( '#buttonSearch' ).show() }  
 
 
-  hideButtonSearch() {
-
-    $( '#buttonSearch' ).hide()
-  }   
+  hideButtonSearch() { $( '#buttonSearch' ).hide() }   
 
 
-  showButtonsChoice() {
-
-    $( '.buttonsChoice' ).show()
-  }
+  showButtonsChoice() { $( '.buttonsChoice' ).show() }
 
 
-  hideButtonsChoice() {
-
-    $( '.buttonsChoice' ).hide()
-  }  
+  hideButtonsChoice() { $( '.buttonsChoice' ).hide() }  
   
 
-  addLine() {
-
-    $( '#info' ).append( ui.line + 'Round:<br/>' )    
-  }
+  addLine() { $( '#info' ).append( this.line + 'Round:<br/>' ) }
 
 
-  addValueFatality( val ) {
-
-    $('#info').append( ' ' + val )
-  }
+  addValueFatality( val ) { $('#info').append( ' ' + val ) }
 
 
-  setMessBeforeFatality() {
-
-    $( '#info' ).append( '<br/>wait Death...' )  
-  }
+  setMessBeforeFatality() { $( '#info' ).append( '<br/>wait Death...' ) }
 
 
-  setMessageEnd( mess ) {
-
-    $('#info').append( '<br>' + mess + '</br>' )
-  }
+  setMessageEnd( mess ) { $('#info').append( '<br>' + mess + '</br>' ) }
 
 
-  clearScreen() {
-  
-    $('#info').html('')
-  }
+  clearScreen() { $('#info').html('') }
 
 
   startAnimationWait() {
 
-    $('<div/>',{ 'id' : 'loadBar' }).appendTo('#info');	
+    $('<div/>',{ 'id' : 'loadBar' }).appendTo('#info')	
     this.intervalAnimation = setInterval( () => { this.waitProgress() }, 1000 )
   }
   
 
-  waitProgress() { 
-
-    $('#loadBar').append('*');	
-  }
+  waitProgress() { $('#loadBar').append('*')	}
   
 
   stopAnimationWait() {
 
-    clearInterval( this.intervalAnimation );
-    $('#loadBar').remove();	
+    clearInterval( this.intervalAnimation )
+    $('#loadBar').remove()
   }  
 }
 

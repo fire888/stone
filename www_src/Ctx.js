@@ -53,7 +53,6 @@ class Ctx {
 
   initAnimation( onInit ) {
     
-
     /** ANIMATION WAIT */
 
     let framesWait = []
@@ -262,8 +261,8 @@ class Ctx {
   setStartSign() {
    
     this.signHeroGood.gotoAndStop(0)
-    this.signHeroGood.x = window.innerWidth/2
-    this.signHeroGood.y = window.innerHeight/2 + 100  
+    this.signHeroGood.x = this.stepX*10
+    this.signHeroGood.y = this.stepY*12  
     this.stage.addChild( this.signHeroGood )
   }
 
@@ -421,32 +420,16 @@ class Ctx {
     let sp = null
   
     if ( hero ) {
-      if ( choice == 'stone' ) {
-        sp = this.stoneHero 
-      }
-      if ( choice == 'paper' ) {
-        sp = this.paperHero 
-      }
-      if ( choice == 'scissors' ) {
-        sp = this.scissorsHero 
-      }
-      if ( choice == 'timeout' ) {
-        sp = this.signHeroBad 
-      }           
+      if ( choice == 'stone' ) sp = this.stoneHero 
+      if ( choice == 'paper' ) sp = this.paperHero 
+      if ( choice == 'scissors' ) sp = this.scissorsHero 
+      if ( choice == 'timeout' ) sp = this.signHeroBad 
     }
     if ( enemy ) {
-      if ( choice == 'stone' ) {
-        sp = this.stoneEnemy
-      }
-      if ( choice == 'paper' ) {
-        sp = this.paperEnemy 
-      }
-      if ( choice == 'scissors' ) {
-        sp = this.scissorsEnemy 
-      }
-      if ( choice == 'timeout' ) {
-        sp = this.signEnemyBad 
-      }              
+      if ( choice == 'stone' ) sp = this.stoneEnemy
+      if ( choice == 'paper' ) sp = this.paperEnemy 
+      if ( choice == 'scissors' ) sp = this.scissorsEnemy 
+      if ( choice == 'timeout' ) sp = this.signEnemyBad 
     }
 
     return sp

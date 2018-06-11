@@ -36,6 +36,7 @@ randomFatalityHash = null
 /** INIT GAME ******************************************************/
 
 const init = () => {	
+  
   return new Promise(( resolve ) => {
       ctx.loadAssets( resolve )
   })
