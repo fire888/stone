@@ -18,15 +18,6 @@ class Client {
   constructor() {}
 
 
-  sendSignToFindEnemy( updateGame ) {
-
-    $.post( '/api/user/find-game' )
-      .then(( result ) => {
-        updateGame( result )
-    })
-  }
-  
-
   getSignIfConnectFirst( updateGame ) {	  
 
     $.get( '/api/session/hello' )
@@ -34,6 +25,15 @@ class Client {
         updateGame( result )					
       })
   }  
+
+
+  sendSignToFindEnemy( updateGame ) {
+
+    $.post( '/api/user/find-game' )
+      .then(( result ) => {
+        updateGame( result )
+    })
+  }
 
 
   getSignAboutUpdateGameResult( updateGame ) {
@@ -59,6 +59,14 @@ class Client {
       .then(( result ) => {
         updateGame( result )
       })
+  }
+
+
+  postEnemyIsDisconnected() {
+
+    $.post( '/api/game/enemy-disconnected' )
+      .then(( result ) => {
+      })  
   }
 
 

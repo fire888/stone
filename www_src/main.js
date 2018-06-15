@@ -99,7 +99,9 @@ const connectFirst = () => {
 const apiFindEnemy = () => {
 
   client.sendSignToFindEnemy(( serverResult ) => {
-    if ( serverResult.state === 'playing' ) {
+    console.log( 'APIFINDENEMY*********************')    
+    console.log( serverResult )
+    if ( serverResult.state === 'playing' ) { ////!!!!!!!!!!!!!!!!!!!!! 
       ui.stopAnimationWait()
       meetingPlayers()					
     } else { 
@@ -171,11 +173,18 @@ const endTimerRound = () => {
 
 const updateGameResult = ( serverResult ) => {	
  
-  if ( serverResult.enemyMadeChoice ) {	
+  console.log( 'UPDATEGAMERESULT*********************')
+  console.log( serverResult )
 
-    clearTimeout( timerUpdateGameResult )
-    clearTimeout( timerRound )
-    ui.stopAnimationWait()
+  if ( serverResult.state == 'oneOfPlayersDisconnected' ) {
+    endingRound()
+    drawEnemyDisconnection()
+    return
+  }
+
+  if ( serverResult.enemyMadeChoice ) {	
+    endingRound()
+
     ui.drawRoundResult( serverResult.results[ serverResult.results.length-1 ] )       
     ctx.drawPlayersChoices( serverResult.results[ serverResult.results.length-1 ] )
 
@@ -191,6 +200,19 @@ const updateGameResult = ( serverResult ) => {
 }
 
 
+const endingRound = () => {
+
+  clearInterval( intervalListenChoiceEnemy )
+  intervalListenChoiceEnemy = null    
+  clearTimeout( timerUpdateGameResult )
+  timerUpdateGameResult = null    
+  clearTimeout( timerRound )
+  timerRound = null        
+
+  ui.stopAnimationWait()
+} 
+
+
 const nextRound = () => {
 
   client.sendReadyForNextRound(( serverResult ) => {
@@ -200,22 +222,43 @@ const nextRound = () => {
     if ( serverResult.state === 'over') {
       endBattle()
     }
+
+    if ( serverResult.state === 'fatality') {
+      endBattle()      
+    }
+
     if ( serverResult.state === 'wait_fatality') { 
       gameStatus = 'wait-choice-fatality'
       startFatality( serverResult ) 
       console.log( 'end Game' )		
     }
+
     if ( serverResult.state !== 'fatality' && serverResult.state !== 'wait_fatality'   ) { 
       startRound()		
     }
+    
   })
 }
 
   
 /** FUNCTIONS END GAME *********************************************/
 
-const checkIsButtonPushForNotFatality = () => {
 
+const drawEnemyDisconnection = () => 
+{ 
+  console.log('Enemy Disconnected')
+  client.postEnemyIsDisconnected()
+  ui.setMessageEnd('ENEMY RUN FROM BATTLE - You WIN !!')
+  ctx.stopAnimationChoice( true, true )
+  ctx.removeAnimationChoice( true, true )  
+  ctx.removePlayersChoices()  
+  ctx.addGoodSign( true, false )    
+  endBattle()   
+} 
+
+
+const checkIsButtonPushForNotFatality = () => 
+{
   if (  gameStatus != 'wait-choice-fatality' ) {
     return true
   } else {
@@ -224,8 +267,8 @@ const checkIsButtonPushForNotFatality = () => {
 } 
 
 
-const startFatality = ( serverResult ) => {
-
+const startFatality = ( serverResult ) => 
+{
   gameStatus = 'wait-choice-fatality'
 
   ui.setMeccageStartFatality()
@@ -260,8 +303,8 @@ const startFatality = ( serverResult ) => {
 }
   
   
-const makeHashFatality = () => {	
-
+const makeHashFatality = () => 
+{	
   randomFatalityHash = [];
   for ( let i = 0; i < 5; i ++ ) {
     let n = Math.floor( Math.random()*3 );

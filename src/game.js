@@ -11,7 +11,7 @@ class Game {
         User2.game = this;
         this.results = [];
         this.choices = [ null, null ];
-        this.state = 'play'; // play | wait_ready | wait_fatality | fatality
+        this.state = 'play'; // play | wait_ready | wait_fatality | fatality | oneOfPlayersDisconnected
         this.fatalityId = 'none'; // remove not good param - null
         this.winner = null;
         this.roundTimer = null;
@@ -43,7 +43,7 @@ class Game {
     
     move(user, choice)
     {
-        if (this.state !== 'play') {
+        if (this.state !== 'play') { 
             this.log('ignore move in not play state');
             return this.json(user);
         }
@@ -86,7 +86,7 @@ class Game {
         }
         this.fatalityId = decodeFatalityCombination(resultFatality);
         this.log('fatality is', this.fatalityId);
-        this.state = 'fatality';//!!!!!!!!!
+        this.state = 'fatality';
         return this.json(user);
     }
 
@@ -97,13 +97,13 @@ class Game {
 
     updateResults()
     {
+        if ( this.state == 'oneOfPlayersDisconnected' ) {
+            return
+        }
+
         const winnerIdx = findWinnerIdx(this.choices);
         if (winnerIdx === undefined)
             return;
-
-        if (this.roundTimer)
-            clearTimeout(this.roundTimer);
-        this.roundTimer = null;
 
         this.results.push({ choices: this.choices.slice(0) });
         if (this.results.length < 3) {
@@ -145,6 +145,11 @@ class Game {
                 this.startRound();
             }
         }
+
+        if (this.roundTimer)
+            clearTimeout(this.roundTimer);
+        this.roundTimer = null;
+
         return this.json(user);
     }
 
@@ -169,18 +174,23 @@ class Game {
     startRound() {
         if (this.roundTimer !== null)
         clearTimeout(this.roundTimer);
-        this.roundTimer = setTimeout(() => this.roundTimeoutAlarm(), 10000);
+        this.roundTimer = setTimeout(() => this.roundTimeoutAlarm(), 9000);
     }
 
     roundTimeoutAlarm() {
+        console.log('roundTimeoutAlarm **************** !!')
         this.roundTimeout = null;
-        if (this.state !== 'play')
-            return;
-        for (var i = 0; i < this.choices.length; ++i) {
-            if (this.choices[i] === null)
-                this.choices[i] = 'timeout';
-        }
-        this.updateResults();
+
+        this.state = 'oneOfPlayersDisconnected'
+        return            
+        
+        //if (this.state !== 'play')
+        //    return;
+        //for (var i = 0; i < this.choices.length; ++i) {
+        //    if (this.choices[i] === null) //!-----------------------------------
+        //        this.choices[i] = 'timeout'; //!-----------------------------------
+        //}
+        //this.updateResults();
     }
     log(...args) {
         console.log(...[`game ${this.users[0].name} vs ${this.users[1].name} (${this.state}):`, ...args]);

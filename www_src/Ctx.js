@@ -390,12 +390,22 @@ class Ctx {
       this.kulakEnemy.gotoAndStop( 5 )     
     }    
   }
+
+
+  removeAnimationChoice( hero, enemy ) {
+  
+    if ( hero ) {
+      this.stage.removeChild( this.kulakHero )  
+    }
+    if ( enemy ) {
+      this.stage.removeChild( this.kulakEnemy )
+    }    
+  }
   
   
   drawPlayersChoices( choices ) {
     
-    this.stage.removeChild( this.kulakEnemy )
-    this.stage.removeChild( this.kulakHero )
+    this.removeAnimationChoice( true, true )
     
     this.currentSpriteHero = this.getSprite( true, false, choices.myChoice )
     this.stage.addChild( this.currentSpriteHero )    
