@@ -80,7 +80,6 @@ class Game {
 
     fatality(user, resultFatality)
     {
-        console.log( this.state + '!********************' )
         if (this.state !== 'wait_fatality') {
             this.log('unexpected fatality: ', user.name);
             return this.json(user);
@@ -141,7 +140,6 @@ class Game {
         this.log('the winner is', this.winner.name);
         this.state = 'wait_fatality';
 
-        console.log('start fatalityTimeoutAlarm   *************')
         clearTimeout(this.roundTimer);
         this.roundTimer = null        
         this.fatalityTimer = setTimeout( () => { this.fatalityTimeoutAlarm() }, 14000 );
@@ -194,8 +192,7 @@ class Game {
         this.state = 'oneOfPlayersDisconnected'           
     }
 
-    fatalityTimeoutAlarm() { 
-        console.log('fatalityTimeoutAlarm***********!!!!')     
+    fatalityTimeoutAlarm() {    
         this.fatalityTimer = null
         this.destroy()
     }

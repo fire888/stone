@@ -42,13 +42,14 @@ const init = () => {
   })
   .then( () => {
     return new Promise(( resolve ) => { 
-      ui.init()      
+      ui.init()    
       ctx.draw()
       resolve()
     })
   })
   .then(() => {
     return new Promise(( resolve ) => {
+      initErrorConnection()
       initButtonSearchEnemy()
       initButtonsChoiceHero()    
       resolve()
@@ -60,6 +61,21 @@ const init = () => {
   })
 }
   
+
+const initErrorConnection = () => {
+
+  client.setFunctionResponseError( () => {
+    ui.setMessageEnd( '!.. DISCONNECT WITH GAME/ MAY BE PAGE WAS RELOADED' )
+    endingRound()
+    ctx.removeBadSign( true, true ) 
+    ctx.removeGoodSign( true, true )
+    ctx.removeAnimationChoice( true, true )
+    ctx.removePlayersChoices()    
+    ctx.removeAnimationFatality()    
+    endBattle()    
+  })
+}
+
 
 const initButtonSearchEnemy = () => {
 

@@ -15,14 +15,20 @@
 
 class Client {
 
-  constructor() {}
+  constructor() {
 
+    this.responseError = () => {}
+  }
 
+  
   getSignIfConnectFirst( updateGame ) {	  
 
     $.get( '/api/session/hello' )
       .done(( result ) => {		  
         updateGame( result )					
+      })
+      .fail( () => {
+        this.responseError()
       })
   }  
 
@@ -30,6 +36,9 @@ class Client {
   sendSignToFindEnemy( updateGame ) {
 
     $.post( '/api/user/find-game' )
+      .fail( () => {
+        this.responseError()
+      })
       .then(( result ) => {
         updateGame( result )
     })
@@ -41,41 +50,53 @@ class Client {
     $.get('/api/game').done(( results ) => { 
       updateGame( results )
     })
+    .fail( () => {
+      this.responseError()
+    })    
   }
 
 
   sendHeroChoice( choice, updateGame ) { 
 
     $.post( '/api/game/move?choice=' + choice)
+      .fail( () => {
+        this.responseError()
+      })     
       .then(( result ) => {         
         updateGame( result ) 
-      }) 
+      })      
   }
 
 
   sendReadyForNextRound( updateGame ) {  
 
     $.post( '/api/game/next-round' )
+      .fail( () => {
+        this.responseError()
+      })      
       .then(( result ) => {         
         updateGame( result )
-      })
+      })  
   }
 
 
   postEnemyIsDisconnected() {
 
     $.post( '/api/game/enemy-disconnected' )
+      .fail( () => {
+        this.responseError()
+      })     
       .then(( result ) => {
-      })  
+      })     
   }
 
 
   postWinnerResultFatality( resultFatality, updateGame ) {
 
-    $.post( '/api/game/fatality?is=' + resultFatality )
+    $.post( '/api/game/fatality?is=' + resultFatality )      
       .then(( result ) => {
         updateGame( result )	
-      })		
+      })    		
   }
 
 
@@ -84,8 +105,13 @@ class Client {
     $.post( '/api/game/isFatalityDoneForLoser' )
       .then(( result ) => {
         updateGame( result )
-      })	
+      })
   }
+
+  setFunctionResponseError( func ) {
+    
+    this.responseError = func
+  }  
 }
 
 export default Client

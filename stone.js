@@ -118,7 +118,6 @@ app.post('/api/game/isFatalityDoneForLoser', function( req, res ) {
 });
 
 app.post('/api/game/enemy-disconnected', function( req, res ) {
-    console.log('GET POSTING DISCONNECT DESTROY *************')
     const user = findUser(req, res);
     if (!user)
         return;
