@@ -65,9 +65,8 @@ const init = () => {
 const initErrorConnection = () => {
 
   client.setFunctionResponseError( () => {
-    clearAllTimers()    
     ui.setMessageEnd( '!.. DISCONNECT WITH GAME/ MAY BE PAGE WAS RELOADED' )
-    ui.stopAnimationWait()
+    endingRound()
     ctx.removeBadSign( true, true ) 
     ctx.removeGoodSign( true, true )
     ctx.removeAnimationChoice( true, true )
@@ -191,15 +190,14 @@ const endTimerRound = () => {
 const updateGameResult = ( serverResult ) => {	 
  
   if ( serverResult.state == 'oneOfPlayersDisconnected' ) {
-    clearAllTimers()
-    ui.stopAnimationWait()    
+    endingRound()
     drawEnemyDisconnection()
     return
   }
 
   if ( serverResult.enemyMadeChoice ) {	
-    clearAllTimers()
-    ui.stopAnimationWait()
+    endingRound()
+
     ui.drawRoundResult( serverResult.results[ serverResult.results.length-1 ] )       
     ctx.drawPlayersChoices( serverResult.results[ serverResult.results.length-1 ] )
 
@@ -215,7 +213,7 @@ const updateGameResult = ( serverResult ) => {
 }
 
 
-const clearAllTimers = () => {
+const endingRound = () => {
   
   clearInterval( intervalListenChoiceEnemy )
   intervalListenChoiceEnemy = null    
@@ -223,6 +221,8 @@ const clearAllTimers = () => {
   timerUpdateGameResult = null    
   clearTimeout( timerRound )
   timerRound = null        
+
+  ui.stopAnimationWait()
 } 
 
 
