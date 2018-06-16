@@ -141,6 +141,7 @@ const meetingPlayers = () => {
   
 const startRound = () => {
 
+  ui.hideButtonSearch()
   ui.addLine()
   ui.startAnimationWait()
   ui.showButtonsChoice()  
@@ -350,7 +351,6 @@ const checkFatalityDone = choice => {
   
 const postWinnerResultFatality = resultFatality => {
 
-  console.log( ' postWinnerResultFatality !!!!!!!!!!!! ' )
   client.postWinnerResultFatality( resultFatality, ( serverResult ) => {
     endFatality( serverResult )
   })
