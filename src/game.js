@@ -15,6 +15,7 @@ class Game {
         this.fatalityId = 'none'; // remove not good param - null
         this.winner = null;
         this.roundTimer = null;
+        this.fatalityTimer = null;        
         this.startRound();
         this.log('is created');
     }
@@ -92,8 +93,9 @@ class Game {
         this.log('fatality is', this.fatalityId);
         this.state = 'fatality';
 
-        clearTimeout( this.roundTimer )
-        this.roundTimer = setTimeout(() => this.fatalityTimeoutAlarm(), 3000);
+        clearTimeout( this.fatalityTimer )
+        this.fatalityTimer = null        
+        this.fatalityTimer = setTimeout(() => this.fatalityTimeoutAlarm(), 3000);
 
         return this.json(user);
     }
@@ -115,6 +117,7 @@ class Game {
 
         this.results.push({ choices: this.choices.slice(0) });
         if (this.results.length < 3) {
+ 
             this.log('wait next round'); 
             this.state = 'wait_ready';
             return;
@@ -138,26 +141,28 @@ class Game {
         this.log('the winner is', this.winner.name);
         this.state = 'wait_fatality';
 
-        if (this.roundTimer !== null)
+        console.log('start fatalityTimeoutAlarm   *************')
         clearTimeout(this.roundTimer);
-        
-        this.roundTimer = setTimeout(() => this.fatalityTimeoutAlarm(), 16000);
+        this.roundTimer = null        
+        this.fatalityTimer = setTimeout( () => { this.fatalityTimeoutAlarm() }, 14000 );
     }
 
     nextRound(user) {
-        if (this.state !== 'wait_ready' && this.state !== 'fatality')
+        if (this.state !== 'wait_ready' && this.state !== 'fatality') {
+            clearTimeout(this.roundTimer);
+            this.roundTimer = null           
             return this.json(user);
+        }    
         const index = this.index(user);
         this.choices[index] = null;
-        if (this.choices[0] === null && this.choices[1] === null) {
-            if (this.state == 'fatality') {
-            //    this.destroy();
-            //    return { state: 'over' };
-            } else {
-                this.state = 'play';
-                this.startRound();
-            }
-        }
+        if (this.choices[0] === null && this.choices[1] === null) {  
+
+            clearTimeout(this.roundTimer)
+            this.roundTimer = null   
+        
+            this.state = 'play'                
+            this.startRound(); 
+        }         
         return this.json(user);
     }
 
@@ -180,27 +185,18 @@ class Game {
     }
 
     startRound() {
-        if (this.roundTimer !== null)
-        clearTimeout(this.roundTimer);
-        this.roundTimer = setTimeout(() => this.roundTimeoutAlarm(), 12000);
+        clearTimeout( this.roundTimer )     
+        this.roundTimer = setTimeout( () => { this.roundTimeoutAlarm() }, 14000)               
     }
 
     roundTimeoutAlarm() {
-        console.log('roundTimeoutAlarm **************** !!')
-        this.roundTimeout = null;
+        this.roundTimer = null
         this.state = 'oneOfPlayersDisconnected'           
-        //if (this.state !== 'play')
-        //    return;
-        //for (var i = 0; i < this.choices.length; ++i) {
-        //    if (this.choices[i] === null) //!-----------------------------------
-        //        this.choices[i] = 'timeout'; //!-----------------------------------
-        //}
-        //this.updateResults();
     }
 
-    fatalityTimeoutAlarm() {
-        console.log('fatalityTimeoutAlarm **************** !!')        
-        this.roundTimeout = null;
+    fatalityTimeoutAlarm() { 
+        console.log('fatalityTimeoutAlarm***********!!!!')     
+        this.fatalityTimer = null
         this.destroy()
     }
 

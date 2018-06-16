@@ -213,6 +213,8 @@ const nextRound = () => {
   
   client.sendReadyForNextRound(( serverResult ) => {
     
+    endingRound()
+        
     ctx.removePlayersChoices()
 
     if ( serverResult.state === 'over') {
@@ -287,9 +289,7 @@ const startFatality = ( serverResult ) => {
     
     loserWaitResultFatality()
 
-    timerEndFatality = setTimeout(() => { 
-      endFatality() 
-    }, 14000 )    
+    timerEndFatality = setTimeout( () => { endFatality() }, 14000 )    
   }
 }
   
@@ -382,6 +382,11 @@ const endFatality = serverResult => {
       ctx.addBadSign( false, true )
       ctx.addGoodSign( true, false )       
     }
+  }
+  if ( ! serverResult ) {
+     ui.setMessageEnd(' Fatality Miss  ')
+     ctx.addBadSign( false, true )
+     ctx.addGoodSign( true, false )        
   }
   endBattle()  
 }
