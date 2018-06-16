@@ -13,7 +13,9 @@
  *                       *  License        :  MIT         
  *******************************************************************/
 
+
 'use strict'
+
 
 class Ctx {
  
@@ -368,7 +370,7 @@ class Ctx {
 
   /** FUNCTIONS ROUND **********************************************/
 
-  startAnimationChoice( hero, enemy ) {
+  startAnimationKulak( hero, enemy ) {
   
     if ( hero ) {
       this.kulakHero.play()
@@ -381,7 +383,7 @@ class Ctx {
   } 
 
 
-  stopAnimationChoice( hero, enemy ) {
+  stopAnimationKulak( hero, enemy ) {
   
     if ( hero ) {
       this.kulakHero.gotoAndStop( 5 )    
@@ -392,7 +394,7 @@ class Ctx {
   }
 
 
-  removeAnimationChoice( hero, enemy ) {
+  removeAnimationKulak( hero, enemy ) {
   
     if ( hero ) {
       this.stage.removeChild( this.kulakHero )  
@@ -405,7 +407,7 @@ class Ctx {
   
   drawPlayersChoices( choices ) {
     
-    this.removeAnimationChoice( true, true )
+    this.removeAnimationKulak( true, true )
     
     this.currentSpriteHero = this.getSprite( true, false, choices.myChoice )
     this.stage.addChild( this.currentSpriteHero )    
@@ -508,11 +510,11 @@ class Ctx {
 
   /** DRAW EVERY FRAME ***********************************************/
 
-  draw() { 
+  drawFrame() { 
 
     this.renderer.render( this.stage )
     requestAnimationFrame(() => { 
-      this.draw() 
+      this.drawFrame() 
     })
   }
 }   

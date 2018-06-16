@@ -13,17 +13,18 @@
  *                       *  License        :  MIT         
  *******************************************************************/
 
+
+'use strict'
+
+
 class Ui {
 
   constructor() {
-
     this.line = '<br/>--------------------------------------------------------------<br/>';
     this.intervalAnimation = null 
   }
 
-
   init() {
-
     $( "<div id='ui'></div>" ).appendTo( "body" )
     $( "<div id='info'></div>" ).appendTo( "#ui" )
     $( "<button id='buttonSearch'>search Enemy</button>" ).appendTo( "#ui" )
@@ -34,9 +35,7 @@ class Ui {
     $( '.buttonsChoice' ).hide()                                 
   }
   
-
   clickButtonSearchEnemy( updateGame ) {
-
     $( '#buttonSearch' ).click(() => {
         $( '#info' ).append( 'Searching enemy:...' )
         $( '#buttonSearch' ).hide()
@@ -44,9 +43,7 @@ class Ui {
       })
   }
 
-
   clickButtonsChoiceHero( updateGame, isHideButtons ) {
-
     $( '.buttonsChoice' ).click(( e ) => {
       if ( isHideButtons() ) {
         $( '.buttonsChoice' ).hide()          
@@ -54,39 +51,28 @@ class Ui {
       updateGame( e )			
     })  
   } 
-  
-  
+    
   setConnectionMessage( name ) {
-
     $( '#info' ).append( 'Connecting done! <br/>' + 'your name: ' + name + this.line )
   }
 
-
   setMessageSearchEnemy( name ) {
-
     $( '#info' ).append( 'ok.' + this.line + 'Find Enemy: ' + name)
   }
 
-
   setMessageEnemyMadeChoice() {
-
     $( '#info' ).append( 'Enemy made choice.' )
   }
 
-
   setMessageChoiceHero( choice ) {
-
     $( '#info' ).append( 'You: ' + choice + '<br/>' )	
   }
 
   setMeccageStartFatality() {
-
     $( '#info' ).append( '<br/>Fatality: ' )
   }
     
-  
   drawRoundResult( lastRoundResult ) {
-
     $('#info').append(
       '<br/>Your: ' + lastRoundResult.myChoice + 
       ' / Enemy: ' + lastRoundResult.enemyChoice + 
@@ -94,49 +80,37 @@ class Ui {
     ) 
   }
 
-
   showButtonSearch() { $( '#buttonSearch' ).show() }  
-
 
   hideButtonSearch() { $( '#buttonSearch' ).hide() }   
 
-
   showButtonsChoice() { $( '.buttonsChoice' ).show() }
-
 
   hideButtonsChoice() { $( '.buttonsChoice' ).hide() }  
   
-
   addLine() { $( '#info' ).append( this.line + 'Round:<br/>' ) }
-
 
   addValueFatality( val ) { $('#info').append( ' ' + val ) }
 
-
   setMessBeforeFatality() { $( '#info' ).append( '<br/>wait Death...' ) }
-
 
   setMessageEnd( mess ) { $('#info').append( '<br>' + mess + '</br>' ) }
 
-
   clearScreen() { $('#info').html('') }
 
-
   startAnimationWait() {
-
     $('<div/>',{ 'id' : 'loadBar' }).appendTo('#info')	
     this.intervalAnimation = setInterval( () => { this.waitProgress() }, 1000 )
   }
   
-
   waitProgress() { $('#loadBar').append('*')	}
   
-
   stopAnimationWait() {
-
     clearInterval( this.intervalAnimation )
     $('#loadBar').remove()
   }  
 }
 
+
 export default Ui
+

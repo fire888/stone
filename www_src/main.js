@@ -13,51 +13,54 @@
  *                       *  License        :  MIT         
  *******************************************************************/
 
+
+'use strict' 
+
+
+/** IMPORT *********************************************************/ 
+
+
 import Ui from './Ui' 
 import Client from './Client'
 import Ctx from './Ctx'
 
-const ui = new Ui()
+const ui     = new Ui()
 const client = new Client()
-const ctx = new Ctx()
+const ctx    = new Ctx()
 
 
 /** GAME VARS ******************************************************/
 
+
 let intervalListenChoiceEnemy = null,
-timerRound = null,
-timerUpdateGameResult = null,
-timerEndFatality = null,
-  
-gameStatus = 'none', // wait-choice-fatality | fatality
-randomFatalityHash = null
+timerRound                    = null,
+timerUpdateGameResult         = null,
+timerEndFatality              = null,
+gameStatus                    = 'none', // wait-choice-fatality | fatality
+randomFatalityHash            = null
 
 
 /** INIT GAME ******************************************************/
+
 
 const init = () => {
 
   return new Promise(( resolve ) => {
       ctx.loadAssets( resolve )
   })
-  .then( () => {
+  .then(() => {
     return new Promise(( resolve ) => { 
       ui.init()    
-      ctx.draw()
-      resolve()
-    })
-  })
-  .then(() => {
-    return new Promise(( resolve ) => {
-      initErrorConnection()
+      ctx.drawFrame()
+      ctx.setStartSign() 
       initButtonSearchEnemy()
-      initButtonsChoiceHero()    
+      initButtonsChoiceHero()
+      initErrorConnection()                       
       resolve()
     })
   })
   .then(() => {
     connectFirst()
-    ctx.setStartSign()
   })
 }
   
@@ -66,12 +69,12 @@ const initErrorConnection = () => {
 
   client.setFunctionResponseError( () => {
     ui.setMessageEnd( '!.. DISCONNECT WITH GAME/ MAY BE PAGE WAS RELOADED' )
-    endingRound()
     ctx.removeBadSign( true, true ) 
     ctx.removeGoodSign( true, true )
-    ctx.removeAnimationChoice( true, true )
+    ctx.removeAnimationKulak( true, true )
     ctx.removePlayersChoices()    
-    ctx.removeAnimationFatality()    
+    ctx.removeAnimationFatality()
+    clearAllTimers()       
     endBattle()    
   })
 }
@@ -103,8 +106,11 @@ const initButtonsChoiceHero = () => {
 }  
     
     
-const connectFirst = () => {
+/** START FUNCTIONS ************************************************/
 
+
+const connectFirst = () => {
+  
   client.getSignIfConnectFirst(( serverResult ) => {
     ui.setConnectionMessage( serverResult.name )
     ui.showButtonSearch()	    
@@ -138,14 +144,15 @@ const meetingPlayers = () => {
 
 
 /** FUNCTIONS PLAY ROUND *******************************************/
-  
+
+
 const startRound = () => {
 
   ui.hideButtonSearch()
   ui.addLine()
   ui.startAnimationWait()
   ui.showButtonsChoice()  
-  ctx.startAnimationChoice( true, true )
+  ctx.startAnimationKulak( true, true )
 
   intervalListenChoiceEnemy = setInterval( waitEnemyChoice, 1000 )
   timerRound = setTimeout( endTimerRound, 7000 )		
@@ -157,10 +164,8 @@ const waitEnemyChoice = () => {
   client.getSignAboutUpdateGameResult(( serverResult ) => {
 
     if ( serverResult.enemyMadeChoice ) {	
-      
-      ctx.stopAnimationChoice( false, true )
+      ctx.stopAnimationKulak( false, true )
       ui.setMessageEnemyMadeChoice()
-
       clearInterval( intervalListenChoiceEnemy )		
     }
   })
@@ -170,7 +175,7 @@ const waitEnemyChoice = () => {
 const sendHeroChoice = ( choice ) => {
 
   ui.setMessageChoiceHero( choice )
-  ctx.stopAnimationChoice( true, false )
+  ctx.stopAnimationKulak( true, false )
 
   client.sendHeroChoice( choice, ( serverResult ) => {
     updateGameResult( serverResult )
@@ -190,30 +195,28 @@ const endTimerRound = () => {
 const updateGameResult = ( serverResult ) => {	 
  
   if ( serverResult.state == 'oneOfPlayersDisconnected' ) {
-    endingRound()
+    clearAllTimers()
     drawEnemyDisconnection()
     return
   }
-
   if ( serverResult.enemyMadeChoice ) {	
-    endingRound()
+    clearAllTimers()
 
     ui.drawRoundResult( serverResult.results[ serverResult.results.length-1 ] )       
     ctx.drawPlayersChoices( serverResult.results[ serverResult.results.length-1 ] )
 
     setTimeout( nextRound, 4000 )
-
   } else {
     timerUpdateGameResult = setTimeout( () => {
       client.getSignAboutUpdateGameResult(( serverResult ) => {
         updateGameResult( serverResult )
       })            				
-    }, 500)
+    }, 500 )
   }  
 }
 
 
-const endingRound = () => {
+const clearAllTimers = () => {
   
   clearInterval( intervalListenChoiceEnemy )
   intervalListenChoiceEnemy = null    
@@ -221,7 +224,6 @@ const endingRound = () => {
   timerUpdateGameResult = null    
   clearTimeout( timerRound )
   timerRound = null        
-
   ui.stopAnimationWait()
 } 
 
@@ -229,28 +231,20 @@ const endingRound = () => {
 const nextRound = () => {
   
   client.sendReadyForNextRound(( serverResult ) => {
-    
-    endingRound()
-        
+    clearAllTimers()  
     ctx.removePlayersChoices()
-
-    if ( serverResult.state === 'over') {
-      endBattle()
+    if ( serverResult.state === 'play' || serverResult.state === 'wait_ready' ) {
+      startRound()
+      return		
     }
-
-    if ( serverResult.state === 'fatality') {
-      endBattle()      
-    }
-
     if ( serverResult.state === 'wait_fatality') { 
-      gameStatus = 'wait-choice-fatality'
-      startFatality( serverResult ) 
+      startFatality( serverResult )
+      return 
+    }     
+    if ( serverResult.state === 'over' || serverResult.state === 'fatality' ) {
+      endBattle()
+      return
     }
-
-    if ( serverResult.state !== 'fatality' && serverResult.state !== 'wait_fatality'   ) { 
-      startRound()		
-    }
-    
   })
 }
 
@@ -262,8 +256,8 @@ const drawEnemyDisconnection = () => {
 
   client.postEnemyIsDisconnected()
   ui.setMessageEnd('ENEMY RUN FROM BATTLE - You WIN !!')
-  ctx.stopAnimationChoice( true, true )
-  ctx.removeAnimationChoice( true, true )  
+  ctx.stopAnimationKulak( true, true )
+  ctx.removeAnimationKulak( true, true )  
   ctx.removePlayersChoices()  
   ctx.addGoodSign( true, false )    
   endBattle()   
@@ -281,7 +275,7 @@ const checkIsButtonPushForNotFatality = () => {
 
 
 const startFatality = ( serverResult ) => {
-
+  
   gameStatus = 'wait-choice-fatality'
   ui.setMeccageStartFatality()
   ui.startAnimationWait()
@@ -316,15 +310,9 @@ const makeHashFatality = () => {
   randomFatalityHash = []
   for ( let i = 0; i < 5; i ++ ) {
     let n = Math.floor( Math.random()*3 )
-    if ( n == 0 ) {
-      setValueInHash( 'stone' )
-    }
-    if ( n == 1 ) {
-      setValueInHash( 'scissors' )			
-    }
-    if ( n == 2 ) {
-      setValueInHash( 'paper' )			
-    }					
+    if ( n == 0 ) { setValueInHash( 'stone' ) }
+    if ( n == 1 ) { setValueInHash( 'scissors' ) }
+    if ( n == 2 ) { setValueInHash( 'paper' )	}					
   }
 }
 
@@ -372,7 +360,7 @@ const loserWaitResultFatality = () => {
 
 const endFatality = serverResult => {
 
-  if ( timerEndFatality !== null )  {
+  if ( timerEndFatality !== null ) {
     clearTimeout( timerEndFatality )
     timerEndFatality = null     
   }
@@ -409,13 +397,10 @@ const endFatality = serverResult => {
 }
   
 
-const endBattle = () => {
-
-  setTimeout( clearScreen, 2000 )
-}
+const endBattle = () => setTimeout( clearEnemyFromScreen, 2000 ) 
   
   
-const clearScreen = () => {
+const clearEnemyFromScreen = () => {
 
   gameStatus = 'none'
   ctx.removeGoodSign( false, true )
@@ -426,6 +411,7 @@ const clearScreen = () => {
 
   
 /** START INIT *****************************************************/
+
 
 init()
 
