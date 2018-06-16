@@ -37,7 +37,7 @@ class User {
             break
         case 'searching':
             break;
-        case 'playing':
+        case 'playing':        
             break;
         }
         return this.json();

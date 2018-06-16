@@ -69,7 +69,7 @@ app.get('/api/game', function(req, res) {
     }
     const user = session.user;
     if (!user.game) {
-        return res.status(404).send();
+        return res.status(404).send();      
     }
     const game = user.game;
     res.send(game.json(user));
@@ -91,7 +91,7 @@ app.post('/api/game/next-round', function (req, res) {
     if (!user)
         return;
     if (!user.game)
-        return res.status(404).send();
+        return res.status(404).send();       
     res.send(user.game.nextRound(user));
 });
 

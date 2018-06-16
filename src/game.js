@@ -21,6 +21,9 @@ class Game {
 
     destroy() {
         this.log('game over');
+        clearTimeout( this.roundTimer  )
+        this.roundTimer = null
+
         this.users.forEach((user) => {
             user.gameOver();
         });
@@ -76,6 +79,7 @@ class Game {
 
     fatality(user, resultFatality)
     {
+        console.log( this.state + '!********************' )
         if (this.state !== 'wait_fatality') {
             this.log('unexpected fatality: ', user.name);
             return this.json(user);
@@ -87,6 +91,10 @@ class Game {
         this.fatalityId = decodeFatalityCombination(resultFatality);
         this.log('fatality is', this.fatalityId);
         this.state = 'fatality';
+
+        clearTimeout( this.roundTimer )
+        this.roundTimer = setTimeout(() => this.fatalityTimeoutAlarm(), 3000);
+
         return this.json(user);
     }
 
@@ -129,6 +137,11 @@ class Game {
         this.winner = max === wins[0] ? this.users[0] : this.users[1];
         this.log('the winner is', this.winner.name);
         this.state = 'wait_fatality';
+
+        if (this.roundTimer !== null)
+        clearTimeout(this.roundTimer);
+        
+        this.roundTimer = setTimeout(() => this.fatalityTimeoutAlarm(), 16000);
     }
 
     nextRound(user) {
@@ -145,11 +158,6 @@ class Game {
                 this.startRound();
             }
         }
-
-        if (this.roundTimer)
-            clearTimeout(this.roundTimer);
-        this.roundTimer = null;
-
         return this.json(user);
     }
 
@@ -174,16 +182,13 @@ class Game {
     startRound() {
         if (this.roundTimer !== null)
         clearTimeout(this.roundTimer);
-        this.roundTimer = setTimeout(() => this.roundTimeoutAlarm(), 9000);
+        this.roundTimer = setTimeout(() => this.roundTimeoutAlarm(), 12000);
     }
 
     roundTimeoutAlarm() {
         console.log('roundTimeoutAlarm **************** !!')
         this.roundTimeout = null;
-
-        this.state = 'oneOfPlayersDisconnected'
-        return            
-        
+        this.state = 'oneOfPlayersDisconnected'           
         //if (this.state !== 'play')
         //    return;
         //for (var i = 0; i < this.choices.length; ++i) {
@@ -192,6 +197,13 @@ class Game {
         //}
         //this.updateResults();
     }
+
+    fatalityTimeoutAlarm() {
+        console.log('fatalityTimeoutAlarm **************** !!')        
+        this.roundTimeout = null;
+        this.destroy()
+    }
+
     log(...args) {
         console.log(...[`game ${this.users[0].name} vs ${this.users[1].name} (${this.state}):`, ...args]);
     }

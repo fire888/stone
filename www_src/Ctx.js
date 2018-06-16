@@ -496,7 +496,7 @@ class Ctx {
 
     noRotation ? this.fatality.rotation = 0  : this.fatality.rotation = Math.PI
     this.stage.addChild( this.fatality ) 
-    this.fatality.play()
+    this.fatality.gotoAndPlay( 0 )
   }
 
 

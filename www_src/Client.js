@@ -38,7 +38,7 @@ class Client {
 
   getSignAboutUpdateGameResult( updateGame ) {
 
-    $.get('/api/game').done(( results ) => {
+    $.get('/api/game').done(( results ) => { 
       updateGame( results )
     })
   }
@@ -47,7 +47,7 @@ class Client {
   sendHeroChoice( choice, updateGame ) { 
 
     $.post( '/api/game/move?choice=' + choice)
-      .then(( result ) => { 
+      .then(( result ) => {         
         updateGame( result ) 
       }) 
   }
@@ -56,7 +56,7 @@ class Client {
   sendReadyForNextRound( updateGame ) {  
 
     $.post( '/api/game/next-round' )
-      .then(( result ) => {
+      .then(( result ) => {         
         updateGame( result )
       })
   }
