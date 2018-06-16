@@ -278,7 +278,7 @@ const startFatality = ( serverResult ) => {
 
     timerEndFatality = setTimeout( () => { 
       postWinnerResultFatality( 'miss' ) 
-    }, 10000 )    
+    }, 8000 )    
   }
   if ( serverResult.winner === 'enemy' ) {
 
@@ -334,6 +334,7 @@ const checkFatalityDone = choice => {
   
 const postWinnerResultFatality = resultFatality => {
 
+  console.log( ' postWinnerResultFatality !!!!!!!!!!!! ' )
   client.postWinnerResultFatality( resultFatality, ( serverResult ) => {
     endFatality( serverResult )
   })
