@@ -68,7 +68,7 @@ class Ui {
     $( '#info' ).append( 'You: ' + choice + '<br/>' )	
   }
 
-  setMeccageStartFatality() {
+  setMessageStartFatality() {
     $( '#info' ).append( '<br/>Fatality: ' )
   }
     

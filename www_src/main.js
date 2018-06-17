@@ -36,9 +36,10 @@ let intervalListenChoiceEnemy = null,
 timerRound                    = null,
 timerUpdateGameResult         = null,
 timerEndFatality              = null,
-gameStatus                    = 'none', // wait-choice-fatality | fatality
-randomFatalityHash            = null
+gameStatus                    = 'none', // play | wait-choice-fatality | fatality
+randomFatalityHash            = null,
 
+gooutBrowserTime              = null       
 
 /** INIT GAME ******************************************************/
 
@@ -54,8 +55,10 @@ const init = () => {
       ctx.drawFrame()
       ctx.setStartSign() 
       initButtonSearchEnemy()
+      ui.showButtonSearch()          
       initButtonsChoiceHero()
-      initErrorConnection()                       
+      initErrorConnection()
+      initGooutBrowserTabError()                           
       resolve()
     })
   })
@@ -69,14 +72,40 @@ const initErrorConnection = () => {
 
   client.setFunctionResponseError( () => {
     ui.setMessageEnd( '!.. DISCONNECT WITH GAME/ MAY BE PAGE WAS RELOADED' )
-    ctx.removeBadSign( true, true ) 
-    ctx.removeGoodSign( true, true )
-    ctx.removeAnimationKulak( true, true )
-    ctx.removePlayersChoices()    
-    ctx.removeAnimationFatality()
-    clearAllTimers()       
-    endBattle()    
+    clearErrorScreen()
   })
+}
+
+
+const initGooutBrowserTabError = () => {
+  
+  window.onblur = () => {
+    if ( gameStatus != 'play' ) return
+    gooutBrowserTime = new Date()
+  }
+  window.onfocus = function () {
+    if ( gooutBrowserTime == null ) return
+    if ( new Date() - gooutBrowserTime > 200000 ) {
+      gooutBrowserTime = null
+      clearErrorScreen()
+      ctx.setStartSign() 
+      ui.showButtonSearch()      
+    } 
+  }
+}
+
+
+const clearErrorScreen = () => {
+
+  ctx.removeBadSign( true, true ) 
+  ctx.removeGoodSign( true, true )
+  ctx.removeAnimationKulak( true, true )
+  ctx.removeAnimationWait( true, true )  
+  ctx.removePlayersChoices()    
+  ctx.removeAnimationFatality()
+  ui.hideButtonsChoice()
+  clearAllTimers()       
+  endBattle()      
 }
 
 
@@ -122,6 +151,7 @@ const apiFindEnemy = () => {
 
   client.sendSignToFindEnemy(( serverResult ) => {
     if ( serverResult.state === 'playing' ) { 
+      gameStatus = 'play'
       ui.stopAnimationWait()
       meetingPlayers()					
     } else { 
@@ -135,7 +165,7 @@ const meetingPlayers = () => {
 
   client.getSignAboutUpdateGameResult(( serverResult ) => {
     ui.setMessageSearchEnemy( serverResult.enemy.name )
-    ctx.stopAnimationWait( true, false )
+    ctx.removeAnimationWait( true, false )
     ctx.prepearCanvasToFight( () => { 
       startRound()
     })	    
@@ -256,6 +286,7 @@ const drawEnemyDisconnection = () => {
 
   client.postEnemyIsDisconnected()
   ui.setMessageEnd('ENEMY RUN FROM BATTLE - You WIN !!')
+  ui.hideButtonsChoice()
   ctx.stopAnimationKulak( true, true )
   ctx.removeAnimationKulak( true, true )  
   ctx.removePlayersChoices()  
@@ -277,7 +308,7 @@ const checkIsButtonPushForNotFatality = () => {
 const startFatality = ( serverResult ) => {
   
   gameStatus = 'wait-choice-fatality'
-  ui.setMeccageStartFatality()
+  ui.setMessageStartFatality()
   ui.startAnimationWait()
   if ( serverResult.winner === 'me' ) {
         
@@ -364,7 +395,7 @@ const endFatality = serverResult => {
     clearTimeout( timerEndFatality )
     timerEndFatality = null     
   }
-  ctx.stopAnimationWait( true, true )
+  ctx.removeAnimationWait( true, true )
   ctx.stopAnimationComa( true, true )
   ui.stopAnimationWait()   
   ui.hideButtonsChoice()

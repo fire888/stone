@@ -289,7 +289,7 @@ class Ctx {
   }
 
 
-  stopAnimationWait( hero, enemy ) {
+  removeAnimationWait( hero, enemy ) {
     
     if ( hero ) {
       this.waitHero.stop()
