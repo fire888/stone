@@ -125,13 +125,16 @@ const initButtonSearchEnemy = () => {
   
 const initButtonsChoiceHero = () => {
 
-  ui.clickButtonsChoiceHero(( e ) => {
-    if ( checkIsButtonPushForNotFatality() ) {	
-      sendHeroChoice( e.target.value )
-      return 
-    }   
+  ui.clickButtonsChoiceHero( 
+    ( e ) => {
+      if ( checkIsButtonPushForNotFatality() ) {	
+        sendHeroChoice( e.target.value )
+        return 
+      }   
     checkFatalityDone( e.target.value )        		
-  }, checkIsButtonPushForNotFatality )     
+    }, 
+    checkIsButtonPushForNotFatality
+  )     
 }  
     
     
@@ -263,6 +266,7 @@ const nextRound = () => {
   client.sendReadyForNextRound(( serverResult ) => {
     clearAllTimers()  
     ctx.removePlayersChoices()
+    ui.redrawChoiceButtons( 'show' )    
     if ( serverResult.state === 'play' || serverResult.state === 'wait_ready' ) {
       startRound()
       return		

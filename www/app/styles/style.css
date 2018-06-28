@@ -1,18 +1,88 @@
 
 body {   
-    background-color: black;
-    color: #a0f050;
+  background-color: black;
+  color: #b8b1b1;  
 }
 
 #ui {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    z-index: 100;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 100;
 }
 canvas {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    z-index: 0;    
-}  
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 0;    
+}
+
+#head {
+  position: absolute;
+  top: 0px;
+  left: 0px;  
+  z-index: 2000;
+  height: 400px;
+  width: 100%;
+  text-align: center;
+  color: #b8b1b1;
+}
+
+#startName {
+  font-size: 35px;
+}
+
+#searchingProcess {
+  margin-top: 30px;
+  font-size: 25px;
+}
+
+#name {
+  font-size: 25px;
+}
+
+#buttonsChoiceWrapper, #buttonSearchWrapper {
+  position: absolute;
+  left: 0px;
+  bottom: 20px;
+  width: 100%;
+  height: 80px;
+  text-align: center;
+  z-index: 5000;
+}
+
+.buttonsChoice, #buttonSearch {
+  width: 60px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #dfa43c;
+  border-radius: 5px;  
+  margin: 10px;
+  background: linear-gradient( rgb(75,65,45), rgb(54,34,26), rgb(14,12,10), rgb(20,10,10), rgb(20,10,10), rgb(26,16,10), rgb(26,16,10), rgb(26,16,10), rgb(51,40,20) ); 
+  background-size: cover;
+  background-position: center center;
+  font-size: 30px;
+  color: #b8b1b1;  
+}
+
+.buttonsChoice img {
+  height: 100%;    
+  width: auto; 
+}
+
+#buttonSearch img {
+  margin-left: 15px;
+  float: left;
+  height: 100%;    
+  width: auto; 
+}
+
+#buttonSearch p{
+  padding-top: 20px;
+}
+
+.buttonsChoice:hover, #buttonSearch:hover {
+  border-width: 1px;  
+  border-color: rgba(200,200,200,1);
+  box-shadow: 0 0 20px rgba(220,173,9,0.4);   
+} 
