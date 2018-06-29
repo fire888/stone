@@ -117,7 +117,7 @@ const initButtonSearchEnemy = () => {
     ctx.removeAnimationFatality()
     ctx.removeStartSign()
     ctx.startAnimationWait( true, false )
-    ui.startAnimationWait()
+    //ui.startAnimationWait()
     apiFindEnemy()
   })       
 }  
@@ -155,7 +155,7 @@ const apiFindEnemy = () => {
   client.sendSignToFindEnemy(( serverResult ) => {
     if ( serverResult.state === 'playing' ) { 
       gameStatus = 'play'
-      ui.stopAnimationWait()
+      //ui.stopAnimationWait()
       meetingPlayers()					
     } else { 
       setTimeout( apiFindEnemy, 500 ); 
@@ -182,8 +182,7 @@ const meetingPlayers = () => {
 const startRound = () => {
 
   ui.hideButtonSearch()
-  ui.addLine()
-  ui.startAnimationWait()
+  ui.startAnimationRoundTimer( 7000 )
   ui.showButtonsChoice()  
   ctx.startAnimationKulak( true, true )
 

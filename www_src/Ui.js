@@ -16,20 +16,27 @@
 
 'use strict'
 
+let timerRound = null, 
+timerMargin = null
 
 class Ui {
 
   constructor() {
     this.line = '<br/>--------------------------------------------------------------<br/>';
-    this.intervalAnimation = null 
+    this.intervalAnimation = null
+    this.round = 0 
   }
 
   init() {
     $( "<div id='ui'></div>" ).appendTo( "body" )
     $( "<div id='info'></div>" ).appendTo( "#ui" )
-
-    $( '<div id="head"></div>').appendTo( 'body' )
-    $( '<p id="startName">STONE<br/>SCISSORS<br/>PAPER</p>').appendTo( '#head' )
+    
+    $( '<div id="uiWrapper"></div>').appendTo( 'body' )
+    $( '<div id="scoreWrapper"></div>' ).appendTo( '#uiWrapper' )
+    $( '<div id="score"></div>' ).appendTo( '#scoreWrapper' )
+    $( '<div id="enemyName" class="playersNames"></div>' ).appendTo( '#score' )
+    $( '<div id="playerName" class="playersNames"></div>' ).appendTo( '#score' )
+    $( '<div id="scores"></div>').appendTo( '#score' )
 
     $( '<div id="buttonSearchWrapper"></div>' ).appendTo( 'body' )
     $( '<button id="buttonSearch"></button>' ).appendTo( '#buttonSearchWrapper' ) 
@@ -48,26 +55,49 @@ class Ui {
 
   resizeUi() {
     let h = window.innerHeight
-    console.log( h )
     let step = h/20
     $( '#buttonsChoiceWrapper' ).css( { 'height': step*2.5 + 'px' } )    
     $( '.buttonsChoice' ).css({ 
-        'width'  : step*2.8 + 'px',
-        'height' : step*2.3 + 'px' 
+        'width':      step*2.8 + 'px',
+        'height':     step*2.3 + 'px' 
       }) 
     $( '#buttonSearchWrapper' ).css( { 'height': step*2.5 + 'px' } )   
     $( '#buttonSearch').css({ 
-        'height' : step*2.3 + 'px',
-        'width'  : step*8.5 + 'px' 
-      })      
+        'height':     step*2.3 + 'px',
+        'width':      step*8.5 + 'px' 
+      })
+    $( '#scoreWrapper' ).css( { 'width': step*10 + 'px' } )   
+    $( '#score' ).css({ 
+        'width':       step*7 + 'px',
+        'margin-left': step*7 + 'px',
+        'margin-top':  step*0.7 + 'px'
+      })
+    $( '.playersNames' ).css({
+      'height':      step*1.1 + 'px',
+      'font-size':   step*0.3 + 'px'     
+    }) 
+    $( '.namePl' ).css({
+      'font-size':   step*0.5 + 'px'     
+    })     
+    $( '.roundTimer' ).css({
+      'width':       step*4 + 'px', 
+      'height':      step*0.5 + 'px',
+      'margin':      step*0.1 + 'px'    
+    })
+    $( '#timerLine' ).css({
+      'width':   step*4 + 'px', 
+      'height':   step*0.5 + 'px'           
+    })          
+    
   }
   
   clickButtonSearchEnemy( updateGame ) {
     $( '#buttonSearch' ).click(() => {
-        $( '#head' ).append( '<p id ="searchingProcess">Searching enemy...</p>' )
-        $( '#buttonSearch' ).hide()
-        updateGame()
-      })
+      $( '#enemyName' ).html( 'enemy searching ... ' )
+      this.resizeUi()
+      $( '#buttonSearch' ).hide()
+      updateGame()
+    })
   }
 
   clickButtonsChoiceHero( updateGame, isStatePlay ) {
@@ -80,21 +110,36 @@ class Ui {
   } 
     
   setConnectionMessage( name ) {
-    $( '<p id="playerName">you name: <span id="name">' + name + '</span></p>' ).appendTo( '#head' )
+    $( '#playerName' ).html( 'you<br/><span class="namePl">' + name + '</span>' )
+    this.resizeUi()
   }
 
   setMessageSearchEnemy( name ) {
-    $( '#startName' ).remove()
-    $( '#searchingProcess' ).remove()
-    $( '#info' ).append( 'ok.' + this.line + 'Find Enemy: ' + name)
+    $( '#enemyName' ).html( 'enemy<br/><span class="namePl"> ' + name + '</span>' )
+    this.resizeUi()
   }
+
+
+
+  startAnimationRoundTimer( t ) {
+    $( '<div class="roundTimer" id="r' + this.round + '"></div>').appendTo( '#scores' )
+    $( '<div id="timerLine">11</div>' ).appendTo( '#r' + this.round ) 
+    timerMargin = t
+    this.resizeUi()  
+    animationRoundTimer()
+  }
+
+  stopAnimationRoundTimer() {
+    clearTimeout( timerRound )
+  }
+
 
   setMessageEnemyMadeChoice() {
     $( '#info' ).append( 'Enemy made choice.' )
   }
 
   setMessageChoiceHero( choice ) {
-    $( '#info' ).append( 'You: ' + choice + '<br/>' )	
+    $( '#info' ).append( 'you ' + choice + '<br/>' )	
   }
 
   setMessageStartFatality() {
@@ -102,6 +147,9 @@ class Ui {
   }
     
   drawRoundResult( lastRoundResult ) {
+    this.stopAnimationRoundTimer()
+    this.round ++
+    $( '#lineTimer' ).remove()
     $('#info').append(
       '<br/>Your: ' + lastRoundResult.myChoice + 
       ' / Enemy: ' + lastRoundResult.enemyChoice + 
@@ -171,6 +219,14 @@ class Ui {
   }  
 }
 
+
+const animationRoundTimer = () => {
+  timerMargin -= 70
+ // let line = document.getElementById( 'timerLine' )
+ // console.log( line.style.marginRight )
+ // line.style.marginRight = 7000/timerMargin*line.style.width + 'px' !----------------- 
+  timerRound = setTimeout( animationRoundTimer, 100 )
+}
 
 export default Ui
 

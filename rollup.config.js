@@ -4,8 +4,8 @@ import uglify from 'rollup-plugin-uglify';
 
 export default {
   entry: 'www_src/main.js',
-  dest: 'www_merge/main.js',
-  //dest: 'www/app/main.min.js',  
+  //dest: 'www_merge/main.js',
+  dest: 'www/app/main.min.js',  
   format: 'iife',
   sourceMap: 'inline',
   plugins: [

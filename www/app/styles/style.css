@@ -17,6 +17,18 @@ canvas {
   z-index: 0;    
 }
 
+#uiWrapper {
+  position: absolute;
+  z-index: 2000;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+}
+
+#scoreWrapper {
+  margin: 0 auto;
+}
+
 #head {
   position: absolute;
   top: 0px;
@@ -26,19 +38,6 @@ canvas {
   width: 100%;
   text-align: center;
   color: #b8b1b1;
-}
-
-#startName {
-  font-size: 35px;
-}
-
-#searchingProcess {
-  margin-top: 30px;
-  font-size: 25px;
-}
-
-#name {
-  font-size: 25px;
 }
 
 #buttonsChoiceWrapper, #buttonSearchWrapper {
@@ -86,3 +85,11 @@ canvas {
   border-color: rgba(200,200,200,1);
   box-shadow: 0 0 20px rgba(220,173,9,0.4);   
 } 
+
+.roundTimer {
+  background-color: blue;
+}
+
+#timerLine {
+  background-color: #dfa43c;
+}
