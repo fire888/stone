@@ -20,7 +20,6 @@
 class Ctx {
  
   constructor() {
- 
     this.renderer = new PIXI.CanvasRenderer( window.innerHeight, window.innerHeight )
     document.body.appendChild( this.renderer.view )
     this.renderer.view.style.margin = '0 auto'

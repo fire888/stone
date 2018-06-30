@@ -1,15 +1,35 @@
 
 body {   
   background-color: black;
-  color: #b8b1b1;  
+  color: #b8b1b1; 
+  overflow: hidden; 
 }
 
-#ui {
+#startScreen {
   position: absolute;
-  top: 0px;
   left: 0px;
-  z-index: 100;
+  top: 0px;
+  text-align: center;
+  z-index: 5000;
+  background-color: #000000;
 }
+
+#loaderWrapper {
+  overflow: hidden;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #b8b1b1;
+  margin: 0 auto;
+  padding: 0px;
+}
+
+#loaderWrapper img{
+  margin-top: -30px;
+  margin: 0px;
+  height: 150%;
+  width: auto;
+}
+
 canvas {
   position: absolute;
   top: 0px;
@@ -29,17 +49,6 @@ canvas {
   margin: 0 auto;
 }
 
-#head {
-  position: absolute;
-  top: 0px;
-  left: 0px;  
-  z-index: 2000;
-  height: 400px;
-  width: 100%;
-  text-align: center;
-  color: #b8b1b1;
-}
-
 #buttonsChoiceWrapper, #buttonSearchWrapper {
   position: absolute;
   left: 0px;
@@ -50,8 +59,7 @@ canvas {
   z-index: 5000;
 }
 
-.buttonsChoice, #buttonSearch {
-  width: 60px;
+.buttonsChoice, #buttonSearch, #buttonStart {
   border-style: solid;
   border-width: 1px;
   border-color: #dfa43c;
@@ -76,20 +84,32 @@ canvas {
   width: auto; 
 }
 
-#buttonSearch p{
-  padding-top: 20px;
-}
-
-.buttonsChoice:hover, #buttonSearch:hover {
+.buttonsChoice:hover, #buttonSearch:hover, #buttonStart:hover {
   border-width: 1px;  
   border-color: rgba(200,200,200,1);
   box-shadow: 0 0 20px rgba(220,173,9,0.4);   
 } 
 
 .roundTimer {
-  background-color: blue;
+  background-color: rgb(103, 109, 52);
+  overflow: hidden;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #dfa43c;
+  border-radius: 5px; 
+  text-align: center;   
+}
+
+.roundTimer img{
+  height: 100%;    
+  width: auto;  
 }
 
 #timerLine {
-  background-color: #dfa43c;
+  background-color: #000000;
 }
+
+#fatalitySigns img{
+  height: 100%;    
+  width: auto;  
+} 
