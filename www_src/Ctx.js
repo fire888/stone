@@ -16,33 +16,27 @@
 
 'use strict'
 
+let renderer
+
 
 class Ctx {
  
   constructor() {
-    this.renderer = new PIXI.CanvasRenderer( window.innerHeight, window.innerHeight )
-    document.body.appendChild( this.renderer.view )
-    this.renderer.view.style.margin = '0 auto'
+    renderer = new PIXI.CanvasRenderer( window.innerHeight*0.6, window.innerHeight )
+    document.body.appendChild( renderer.view )
+    renderer.view.id = 'ctx'    
     this.stage = new PIXI.Stage
 
-    this.stepX = null  
-    this.stepY = null
-    this.reckonWindowSize()
+    this.step = null  
+    this.scale = null
 
     this.currentSpriteHero = null
     this.currentSpriteEnemy = null
+
+    this.reckonWindowSize()
   }
-
-
-  reckonWindowSize() {
-  
-    this.stepY = window.innerHeight/20
-    this.stepX = window.innerHeight/20
-  }
-
 
   loadAssets( onInit ) {
-  
     PIXI.loader
       .add( 'app/imgs/signs.json' )
       .add( 'app/imgs/fat01.json' )      
@@ -51,8 +45,12 @@ class Ctx {
       })
   }
 
-
   initAnimation( onInit ) {
+
+    let posXHero = this.step*6 
+    let posYHero = this.step*11
+    let posXEnemy = this.step*5
+    let posYEnemy = this.step*7 
     
     /** ANIMATION WAIT */
 
@@ -63,15 +61,17 @@ class Ctx {
     }
 
     this.waitHero = new PIXI.extras.AnimatedSprite( framesWait )
-    this.waitHero.x = this.stepX*10
-    this.waitHero.y = this.stepY*12
-    this.waitHero.anchor.set(0.5);
-    this.waitHero.animationSpeed = 0.12;
+    this.waitHero.x = posXHero
+    this.waitHero.y = posYHero
+    this.waitHero.scale.set( this.scale, this.scale )
+    this.waitHero.anchor.set( 0.5 )
+    this.waitHero.animationSpeed = 0.12
 
     
     this.waitEnemy = new PIXI.extras.AnimatedSprite( framesWait );
-    this.waitEnemy.x = this.stepX*10  
-    this.waitEnemy.y = this.stepY*8
+    this.waitEnemy.x = posXEnemy
+    this.waitEnemy.y = posYEnemy
+    this.waitEnemy.scale.set( this.scale, this.scale )
     this.waitEnemy.anchor.set(0.5);  
     this.waitEnemy.rotation = Math.PI
     this.waitEnemy.animationSpeed = 0.15;
@@ -86,14 +86,16 @@ class Ctx {
     }
 
     this.comaHero = new PIXI.extras.AnimatedSprite( framesComa )
-    this.comaHero.x = this.stepX*10
-    this.comaHero.y = this.stepY*12
+    this.comaHero.x = posXHero
+    this.comaHero.y = posYHero
+    this.comaHero.scale.set( this.scale, this.scale )
     this.comaHero.anchor.set( 0.5 )
     this.comaHero.animationSpeed = 0.12
 
     this.comaEnemy = new PIXI.extras.AnimatedSprite( framesComa )
-    this.comaEnemy.x = this.stepX*10
-    this.comaEnemy.y = this.stepY*8
+    this.comaEnemy.x = posXEnemy
+    this.comaEnemy.y = posYEnemy
+    this.comaEnemy.scale.set( this.scale, this.scale )
     this.comaEnemy.anchor.set(0.5);
     this.comaEnemy.rotation = Math.PI  
     this.comaEnemy.animationSpeed = 0.12;
@@ -107,14 +109,16 @@ class Ctx {
       framesKulak.push( PIXI.Texture.fromFrame( 'choice' + val + '.png' ) )
     }
     this.kulakHero = new PIXI.extras.AnimatedSprite( framesKulak )
-    this.kulakHero.x = this.stepX*10
-    this.kulakHero.y = this.stepY*12
+    this.kulakHero.x = posXHero
+    this.kulakHero.y = posYHero
+    this.kulakHero.scale.set( this.scale, this.scale )
     this.kulakHero.anchor.set( 0.5 )
     this.kulakHero.animationSpeed = 0.12
 
     this.kulakEnemy = new PIXI.extras.AnimatedSprite( framesKulak )
-    this.kulakEnemy.x = this.stepX*10
-    this.kulakEnemy.y = this.stepY*8
+    this.kulakEnemy.x = posXEnemy
+    this.kulakEnemy.y = posYEnemy
+    this.kulakEnemy.scale.set( this.scale, this.scale )
     this.kulakEnemy.anchor.set( 0.5 )  
     this.kulakEnemy.rotation = Math.PI
     this.kulakEnemy.animationSpeed = 0.12  
@@ -128,15 +132,17 @@ class Ctx {
       framesStone.push( PIXI.Texture.fromFrame( 'stone' + val + '.png' ) )
     }
     this.stoneHero = new PIXI.extras.AnimatedSprite( framesStone )
-    this.stoneHero.x = this.stepX*10
-    this.stoneHero.y = this.stepY*12
+    this.stoneHero.x = posXHero
+    this.stoneHero.y = posYHero
+    this.stoneHero.scale.set( this.scale, this.scale )
     this.stoneHero.anchor.set(0.5)
     this.stoneHero.animationSpeed = 0.05
     this.stoneHero.loop = false
 
     this.stoneEnemy = new PIXI.extras.AnimatedSprite( framesStone )
-    this.stoneEnemy.x = this.stepX*10
-    this.stoneEnemy.y = this.stepY*8
+    this.stoneEnemy.x = posXEnemy
+    this.stoneEnemy.y = posYEnemy
+    this.stoneEnemy.scale.set( this.scale, this.scale )
     this.stoneEnemy.anchor.set(0.5)
     this.stoneEnemy.rotation = Math.PI  
     this.stoneEnemy.animationSpeed = 0.05
@@ -151,15 +157,17 @@ class Ctx {
       framesPaper.push( PIXI.Texture.fromFrame( 'paper' + val + '.png' ) )
     }
     this.paperHero = new PIXI.extras.AnimatedSprite( framesPaper )
-    this.paperHero.x = this.stepX*10
-    this.paperHero.y = this.stepY*12
+    this.paperHero.x = posXHero
+    this.paperHero.y = posYHero
+    this.paperHero.scale.set( this.scale, this.scale )
     this.paperHero.anchor.set(0.5)
     this.paperHero.animationSpeed = 0.05
     this.paperHero.loop = false     
 
     this.paperEnemy = new PIXI.extras.AnimatedSprite( framesPaper )
-    this.paperEnemy.x = this.stepX*10
-    this.paperEnemy.y = this.stepY*8
+    this.paperEnemy.x = posXEnemy
+    this.paperEnemy.y = posYEnemy
+    this.paperEnemy.scale.set( this.scale, this.scale )
     this.paperEnemy.anchor.set(0.5)
     this.paperEnemy.rotation = Math.PI     
     this.paperEnemy.animationSpeed = 0.05 
@@ -174,15 +182,17 @@ class Ctx {
       framesScissors.push( PIXI.Texture.fromFrame( 'scissors' + val + '.png' ) )
     }
     this.scissorsHero = new PIXI.extras.AnimatedSprite( framesScissors )
-    this.scissorsHero.x = this.stepX*10
-    this.scissorsHero.y = this.stepY*12
+    this.scissorsHero.x = posXHero
+    this.scissorsHero.y = posYHero
+    this.scissorsHero.scale.set( this.scale, this.scale )
     this.scissorsHero.anchor.set(0.5)
     this.scissorsHero.animationSpeed = 0.05
     this.scissorsHero.loop = false    
 
     this.scissorsEnemy = new PIXI.extras.AnimatedSprite( framesScissors )
-    this.scissorsEnemy.x = this.stepX*10
-    this.scissorsEnemy.y = this.stepY*8
+    this.scissorsEnemy.x = posXEnemy
+    this.scissorsEnemy.y = posYEnemy
+    this.scissorsEnemy.scale.set( this.scale, this.scale )
     this.scissorsEnemy.anchor.set(0.5)
     this.scissorsEnemy.rotation = Math.PI   
     this.scissorsEnemy.animationSpeed = 0.05  
@@ -200,16 +210,18 @@ class Ctx {
     goodSignFrame.push( PIXI.Texture.fromFrame( 'sign08.png' ) )   
               
     this.signHeroGood = new PIXI.extras.AnimatedSprite( goodSignFrame )
-    this.signHeroGood.x = this.stepX*10
-    this.signHeroGood.y = this.stepY*12
+    this.signHeroGood.x = posXHero 
+    this.signHeroGood.y = posYHero
+    this.signHeroGood.scale.set( this.scale, this.scale )
     this.signHeroGood.anchor.set( 0.5 )
     this.signHeroGood.animationSpeed = 0 
     this.signHeroGood.loop = false     
 
     this.signEnemyGood = new PIXI.extras.AnimatedSprite( goodSignFrame )
-    this.signEnemyGood.x = this.stepX*10
-    this.signEnemyGood.y = this.stepY*8
+    this.signEnemyGood.x = posXEnemy
+    this.signEnemyGood.y = posYEnemy
     this.signEnemyGood.anchor.set( 0.5 )
+    this.signEnemyGood.scale.set( this.scale, this.scale )
     this.signEnemyGood.rotation = Math.PI     
     this.signEnemyGood.animationSpeed = 0
     this.signEnemyGood.loop = false   
@@ -224,15 +236,17 @@ class Ctx {
     badSignFrame.push( PIXI.Texture.fromFrame( 'sign12.png' ) ) 
 
     this.signHeroBad = new PIXI.extras.AnimatedSprite( badSignFrame )
-    this.signHeroBad.x = this.stepX*10
-    this.signHeroBad.y = this.stepY*12
+    this.signHeroBad.x = posXHero
+    this.signHeroBad.y = posYHero
+    this.signHeroBad.scale.set( this.scale, this.scale )
     this.signHeroBad.anchor.set( 0.5 )
     this.signHeroBad.animationSpeed = 0 
     this.signHeroBad.loop = false     
 
     this.signEnemyBad = new PIXI.extras.AnimatedSprite( badSignFrame )
-    this.signEnemyBad.x = this.stepX*10
-    this.signEnemyBad.y = this.stepY*8
+    this.signEnemyBad.x = posXEnemy
+    this.signEnemyBad.y = posYEnemy
+    this.signEnemyBad.scale.set( this.scale, this.scale )
     this.signEnemyBad.anchor.set( 0.5 )
     this.signEnemyBad.rotation = Math.PI     
     this.signEnemyBad.animationSpeed = 0
@@ -247,14 +261,55 @@ class Ctx {
       framesFatality.push( PIXI.Texture.fromFrame( 'fat01_' + val + '.png' ) )
     }
     this.fatality = new PIXI.extras.AnimatedSprite( framesFatality )
-    this.fatality.x = this.stepX*10
-    this.fatality.y = this.stepY*10
+    this.fatality.x = this.step*5
+    this.fatality.y = this.step*10
+    this.fatality.scale.set( this.scale, this.scale )
     this.fatality.anchor.set( 0.5 )
     this.fatality.animationSpeed = 0.05
     this.fatality.loop = false   
+    
+    this.reckonWindowSize()
 
     onInit()
   }
+
+  reckonWindowSize() {
+    let l = window.innerHeight*0.6 
+    let h = window.innerHeight 
+    renderer.view.style.height = l 
+    renderer.view.style.width = h 
+    renderer.resize( l, h )  
+
+    this.step = h/20
+    this.scale = h/1000*0.92
+
+    if ( ! this.waitHero ) return  
+
+    let posXHero = this.step*6 
+    let posYHero = this.step*11
+    let posXEnemy = this.step*5
+    let posYEnemy = this.step*7 
+
+    setSpriteXYScale( this.waitHero, posXHero, posYHero, this.scale )
+    setSpriteXYScale( this.waitEnemy, posXEnemy, posYEnemy, this.scale )  
+    setSpriteXYScale( this.comaHero, posXHero, posYHero, this.scale )
+    setSpriteXYScale( this.comaEnemy, posXEnemy, posYEnemy, this.scale )
+    setSpriteXYScale( this.kulakHero, posXHero, posYHero, this.scale )
+    setSpriteXYScale( this.kulakEnemy, posXEnemy, posYEnemy, this.scale ) 
+    setSpriteXYScale( this.stoneHero, posXHero, posYHero, this.scale )
+    setSpriteXYScale( this.stoneEnemy , posXEnemy, posYEnemy, this.scale ) 
+    setSpriteXYScale( this.scissorsHero, posXHero, posYHero, this.scale )
+    setSpriteXYScale( this.scissorsEnemy, posXEnemy, posYEnemy, this.scale )    
+    setSpriteXYScale( this.paperHero, posXHero, posYHero, this.scale )
+    setSpriteXYScale( this.paperEnemy, posXEnemy, posYEnemy, this.scale ) 
+    setSpriteXYScale( this.signHeroGood, posXHero, posYHero, this.scale )
+    setSpriteXYScale( this.signEnemyGood, posXEnemy, posYEnemy, this.scale )         
+    setSpriteXYScale( this.signHeroBad, posXHero, posYHero, this.scale )
+    setSpriteXYScale( this.signEnemyBad, posXEnemy, posYEnemy, this.scale )  
+    
+    setSpriteXYScale( this.fatality, this.step*5, this.step*10, this.scale )        
+    
+  }  
 
 
   /** FUNCTIONS PREPEAR GAME ***************************************/
@@ -262,8 +317,9 @@ class Ctx {
   setStartSign() {
    
     this.signHeroGood.gotoAndStop(0)
-    this.signHeroGood.x = this.stepX*10
-    this.signHeroGood.y = this.stepY*12  
+    this.signHeroGood.x = this.step*6
+    this.signHeroGood.y = this.step*11
+    this.signHeroGood.scale.set( this.scale, this.scale )
     this.stage.addChild( this.signHeroGood )
   }
 
@@ -321,7 +377,10 @@ class Ctx {
   addGoodSign( hero, enemy ) {
 
     if ( hero ) {
-      this.signHeroGood.gotoAndStop( Math.floor( Math.random()*4 + 1 ) )      
+      this.signHeroGood.gotoAndStop( Math.floor( Math.random()*4 + 1 ) )  
+      this.signHeroGood.x = this.step*6  
+      this.signHeroGood.y = this.step*11
+      this.signHeroGood.scale.set( this.scale, this.scale )         
       this.stage.addChild( this.signHeroGood )
     }
     if ( enemy ) {
@@ -511,12 +570,19 @@ class Ctx {
 
   drawFrame() { 
 
-    this.renderer.render( this.stage )
+    renderer.render( this.stage )
     requestAnimationFrame(() => { 
       this.drawFrame() 
     })
   }
-}   
+}  
+
+
+const setSpriteXYScale = ( ob, x, y, sc ) => {
+  ob.x = x
+  ob.y = y
+  ob.scale.set( sc, sc ) 
+}
 
 
 export default Ctx

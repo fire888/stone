@@ -26,9 +26,7 @@ class Ui {
 
   constructor() {
     this.intervalAnimation = null
-    this.round = 0 
-
-    window.addEventListener( 'resize', this.resizeUi , false )
+    this.round = 0
   }
 
   init() {    
@@ -44,7 +42,7 @@ class Ui {
     $( '<div id="buttonSearchWrapper"></div>' ).appendTo( 'body' )
 
     $( '<button id="buttonStart"></button>' ).appendTo( '#buttonSearchWrapper' )  
-    $( '<p>Start</p>' ).appendTo( '#buttonStart' )
+    //$( '<p>Start</p>' ).appendTo( '#buttonStart' )
     $( '#buttonStart' ).hide()
 
     $( '<button id="buttonSearch"></button>' ).appendTo( '#buttonSearchWrapper' ) 
@@ -65,10 +63,10 @@ class Ui {
     let h = window.innerHeight
     let step = h/20
     $( '#buttonStart').css({ 
-      'height':      step*2.3 + 'px',
-      'width':       step*8.5 + 'px', 
-      'font-size':   step*0.7 + 'px'      
-    })    
+        'height':      step*2.3 + 'px',
+        'width':       step*8.5 + 'px', 
+        'font-size':   step*0.7 + 'px'      
+      })    
     $( '#buttonsChoiceWrapper' ).css( { 'height': step*2.5 + 'px' } )    
     $( '.buttonsChoice' ).css({ 
         'width':       step*2.8 + 'px',
@@ -122,6 +120,8 @@ class Ui {
       updateGame()
     }) 
   }
+
+
   /** START GAME ***************************************************/
 
   setConnectionMessage( name ) {
@@ -147,6 +147,7 @@ class Ui {
 
   hideButtonSearch() { $( '#buttonSearch' ).hide() }    
 
+
   /* ROUND *********************************************************/
 
   startAnimationRoundTimer( t ) {
@@ -167,8 +168,8 @@ class Ui {
     $( '.buttonsChoice' ).click(( e ) => {
       if ( isStatePlay() ) {
         this.redrawChoiceButtons( e.target.value )        
-      }  
-      updateGame( e )			
+      }
+      updateGame( e )	      
     })  
   } 
 
@@ -210,6 +211,7 @@ class Ui {
     this.round ++     
   }
 
+
   /* END GAME ******************************************************/
 
   setMessageStartFatality( v ) {
@@ -230,7 +232,7 @@ class Ui {
   }
 
   setMessage( mess ) { 
-    $('#scores').append( '<br>' + mess + '</br>' ) 
+    $('#result').append( '<br>' + mess + '</br>' ) 
   }
 
   removeFatalityBar() {
@@ -242,7 +244,6 @@ class Ui {
     $( '#result' ).html( '' ) 
     $( '#scores' ).html( '' ) 
     $( '#enemyName' ).html( '' ) 
-    $( '#info' ).html('') 
   }
 }
   

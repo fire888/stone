@@ -36,7 +36,7 @@ let intervalListenChoiceEnemy = null,
 timerRound                    = null,
 timerUpdateGameResult         = null,
 timerEndFatality              = null,
-gameStatus                    = 'none', // play | wait-choice-fatality | fatality
+gameStatus                    = 'none', // play | made-choice-and-wait | wait-choice-fatality | fatality
 randomFatalityHash            = null,
 
 gooutBrowserTime              = null       
@@ -62,7 +62,7 @@ const init = () => {
     })
   })
   .then(() => {
-    removeStartLoader()
+    if ( removeStartLoader ) removeStartLoader()
     initStartButton()
     connectFirst()
   })
@@ -81,7 +81,7 @@ const initErrorConnection = () => {
 const initGooutBrowserTabError = () => {
   
   window.onblur = () => {
-    if ( gameStatus != 'play' ) return
+    if ( gameStatus != 'play' || gameStatus != 'made-choice-and-wait' ) return
     gooutBrowserTime = new Date()
   }
   window.onfocus = function () {
@@ -111,13 +111,16 @@ const clearErrorScreen = () => {
 
 
 const initStartButton = () => {
+
   ui.initStartButton(() => { 
-    removeStartScreen()
+    if ( removeStartScreen ) removeStartScreen()
     ui.showButtonSearch() 
   })
 } 
 
+
 const initButtonSearchEnemy = () => {
+
   ui.clickButtonSearchEnemy(() => {
     ctx.removeGoodSign( true, false )
     ctx.removeBadSign( true, false )  
@@ -134,13 +137,14 @@ const initButtonsChoiceHero = () => {
 
   ui.clickButtonsChoiceHero( 
     ( e ) => {
-      if ( checkIsButtonPushForNotFatality() ) {	
+      if ( buttonsNotBlock() ) {	
+        gameStatus = 'made-choice-and-wait' 
         sendHeroChoice( e.target.value )
         return 
       }   
-    checkFatalityDone( e.target.value )        		
+      checkFatalityDone( e.target.value )        		
     }, 
-    checkIsButtonPushForNotFatality
+    buttonsNotBlock
   )     
 }  
     
@@ -186,6 +190,7 @@ const meetingPlayers = () => {
 
 const startRound = () => {
 
+  gameStatus = 'play'
   ui.hideButtonSearch()
   ui.startAnimationRoundTimer( 7000 )
   ui.redrawChoiceButtons( 'show' )
@@ -212,11 +217,18 @@ const waitEnemyChoice = () => {
 const sendHeroChoice = ( choice ) => {
 
   ctx.stopAnimationKulak( true, false )
-
   client.sendHeroChoice( choice, ( serverResult ) => {
     updateGameResult( serverResult )
   }) 
 }	 
+
+
+const buttonsNotBlock = () => {
+
+  if ( gameStatus == 'made-choice-and-wait' ) return false
+  if (  gameStatus == 'wait-choice-fatality' ) return false
+  return true
+} 
 
 
 const endTimerRound = () => {  
@@ -298,16 +310,6 @@ const drawEnemyDisconnection = () => {
   ctx.removePlayersChoices()  
   ctx.addGoodSign( true, false )    
   endBattle()   
-} 
-
-
-const checkIsButtonPushForNotFatality = () => {
-
-  if (  gameStatus != 'wait-choice-fatality' ) {
-    return true
-  } else {
-    return false
-  }
 } 
 
 
@@ -440,7 +442,15 @@ const clearEnemyFromScreen = () => {
   connectFirst() 
 } 
 
-  
+/** RESIZE WIDDOW **************************************************/
+
+const reckonWindowSize = () => {
+  ctx.reckonWindowSize()
+  ui.resizeUi()
+}
+
+window.addEventListener( 'resize', reckonWindowSize, false )
+
 /** START INIT *****************************************************/
 
 
