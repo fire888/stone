@@ -42,7 +42,6 @@ class Ui {
     $( '<div id="buttonSearchWrapper"></div>' ).appendTo( 'body' )
 
     $( '<button id="buttonStart"></button>' ).appendTo( '#buttonSearchWrapper' )  
-    //$( '<p>Start</p>' ).appendTo( '#buttonStart' )
     $( '#buttonStart' ).hide()
 
     $( '<button id="buttonSearch"></button>' ).appendTo( '#buttonSearchWrapper' ) 
@@ -231,7 +230,9 @@ class Ui {
     $( getChiocePict( val ) ).appendTo( '#fatalitySigns' ) 
   }
 
-  setMessage( mess ) { 
+  setMessage( mess ) {
+    let h = document.getElementById( 'result' )
+    if ( h.innerHTML != '' ) return
     $('#result').append( '<br>' + mess + '</br>' ) 
   }
 
@@ -269,6 +270,8 @@ const getBackColor = v => {
   if ( v == 'enemy' ) return '#5e2208' 
   if ( v == 'draw' ) return '#404040'     
 }
+
+
 
 
 export default Ui
