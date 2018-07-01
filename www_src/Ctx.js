@@ -316,17 +316,17 @@ class Ctx {
 
   setStartSign() {
    
-    this.signHeroGood.gotoAndStop(0)
-    this.signHeroGood.x = this.step*6
-    this.signHeroGood.y = this.step*11
-    this.signHeroGood.scale.set( this.scale, this.scale )
-    this.stage.addChild( this.signHeroGood )
+    this.signHeroBad.gotoAndStop( Math.floor(Math.random()*7 ) )
+    this.signHeroBad.x = this.step*6
+    this.signHeroBad.y = this.step*11
+    this.signHeroBad.scale.set( this.scale, this.scale )
+    this.stage.addChild( this.signHeroBad )
   }
 
 
   removeStartSign() {
   
-    this.stage.removeChild( this.signHeroGood )   
+    this.stage.removeChild( this.signHeroBad )   
   }
 
 

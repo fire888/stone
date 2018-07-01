@@ -50,14 +50,13 @@ body {
   margin: 0 auto;
 }
 
-#buttonsChoiceWrapper, #buttonSearchWrapper {
+#buttonsChoiceWrapper, #buttonSearchWrapper, #buttonSearchStopWrapper {
   position: absolute;
   left: 0px;
   bottom: 20px;
   width: 100%;
-  height: 80px;
   text-align: center;
-  z-index: 5000;
+  z-index: 500;
 }
 
 #buttonStart {
@@ -67,13 +66,12 @@ body {
   border-color: #b8b1b1;  ;
   border-radius: 5px;  
   margin: 10px;
-  font-size: 30px;
   color: #b8b1b1;  
   overflow: hidden;
   cursor: pointer;
 }
 
-.buttonsChoice, #buttonSearch {
+.buttonsChoice{
   border-style: solid;
   border-width: 1px;
   border-color: #dfa43c;
@@ -82,9 +80,25 @@ body {
   background: linear-gradient( rgb(75,65,45), rgb(54,34,26), rgb(14,12,10), rgb(20,10,10), rgb(20,10,10), rgb(26,16,10), rgb(26,16,10), rgb(26,16,10), rgb(51,40,20) ); 
   background-size: cover;
   background-position: center center;
-  font-size: 30px;
   color: #b8b1b1;  
   overflow: hidden;
+}
+
+.buttonsPrepearPlay {
+  border-style: solid;
+  border-width: 1px;
+  border-color: #dfa43c;
+  border-radius: 5px;  
+  margin: 10px;
+  background: linear-gradient( rgb(75,65,45), rgb(54,34,26), rgb(14,12,10), rgb(20,10,10), rgb(20,10,10), rgb(26,16,10), rgb(26,16,10), rgb(26,16,10), rgb(51,40,20) ); 
+  background-size: cover;
+  background-position: center center;
+  color: #b8b1b1;  
+  overflow: hidden;
+  display: block;
+  margin: 0 auto;
+  margin-top: 10px;
+  flex-direction: column
 }
 
 .buttonsChoice img {

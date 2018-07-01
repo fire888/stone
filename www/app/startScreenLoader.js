@@ -1,6 +1,6 @@
 var wr = document.createElement('div');
 wr.id = 'startScreen';
-wr.innerHTML = 'STONE<br/>SCISSORS<br/>PAPER';
+wr.innerHTML = 'STONE<br/>SCISSORS<br/>PAPER<br/>';
 wr.style.height = window.innerHeight + 'px';
 wr.style.width = window.innerWidth + 'px';
 wr.style.fontSize = window.innerHeight*0.04 + 'px';
@@ -19,6 +19,18 @@ var loader = document.getElementById( 'loader' );
 var margLoader = -loader.width*0.3;
 var timerLoader = setTimeout( updateLoader, 30 );
 
+var startButton = document.createElement( 'button' )
+startButton.id = 'buttonStart'
+startButton.style.width = window.innerHeight/2.5 + 'px'; 
+startButton.style.height = window.innerHeight/30 + 'px';
+startButton.style.marginTop = window.innerHeight*0.3 + 'px';
+startButton.style.display = 'none'
+startButton.onclick = () => {
+  removeStartScreen()  
+}
+
+wr.appendChild( startButton )
+
 function updateLoader() {
   loader.style.marginLeft = margLoader + 'px'; 
   margLoader += loader.width/100;
@@ -29,6 +41,7 @@ function updateLoader() {
 function removeStartLoader() {
     clearTimeout( timerLoader );
     wr.removeChild( loaderWrapper );
+    startButton.style.display = 'inline'    
 }
 
 function removeStartScreen() {

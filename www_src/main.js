@@ -19,7 +19,6 @@
 
 /** IMPORT *********************************************************/ 
 
-
 import Ui from './Ui' 
 import Client from './Client'
 import Ctx from './Ctx'
@@ -31,18 +30,19 @@ const ctx    = new Ctx()
 
 /** GAME VARS ******************************************************/
 
-
-let intervalListenChoiceEnemy = null,
+let timerFindEnemy            = null, 
+intervalListenChoiceEnemy     = null,
 timerRound                    = null,
 timerUpdateGameResult         = null,
 timerEndFatality              = null,
 gameStatus                    = 'none', // play | made-choice-and-wait | wait-choice-fatality | fatality
+                                        // play-bot | made-choice-bot | waite-fat-bot | fat-bot 
 randomFatalityHash            = null,
 
 gooutBrowserTime              = null       
 
-/** INIT GAME ******************************************************/
 
+/** INIT GAME ******************************************************/
 
 const init = () => {
 
@@ -54,7 +54,9 @@ const init = () => {
       ui.init()    
       ctx.drawFrame()
       ctx.setStartSign() 
-      initButtonSearchEnemy()         
+      initButtonSearchEnemy()
+      initButtonStopSearchEnemy()      
+      initButtonPlayWithBot()       
       initButtonsChoiceHero()
       initErrorConnection()
       initGooutBrowserTabError()                           
@@ -63,7 +65,6 @@ const init = () => {
   })
   .then(() => {
     if ( removeStartLoader ) removeStartLoader()
-    initStartButton()
     connectFirst()
   })
 }
@@ -114,7 +115,7 @@ const initStartButton = () => {
 
   ui.initStartButton(() => { 
     if ( removeStartScreen ) removeStartScreen()
-    ui.showButtonSearch() 
+    ui.showButtonSearch()
   })
 } 
 
@@ -128,14 +129,27 @@ const initButtonSearchEnemy = () => {
     ctx.removeStartSign()
     ctx.startAnimationWait( true, false )
     ui.clearScreen()
+    ui.hideButtonSearch()
     apiFindEnemy()
   })       
 }  
+
+
+const initButtonStopSearchEnemy = () => {
+
+  ui.initButtonStopSearchEnemy(() => {
+    clearTimeout( timerFindEnemy )
+    ui.hideButtonStopSearch()
+    ui.showButtonSearch()
+    ui.clearScreen()
+    ctx.removeAnimationWait( true, false )
+    ctx.setStartSign() 
+  }) 
+}
   
   
       
 /** START FUNCTIONS ************************************************/
-
 
 const connectFirst = () => {
   
@@ -152,11 +166,12 @@ const apiFindEnemy = () => {
       gameStatus = 'play'
       meetingPlayers()					
     } else { 
-      setTimeout( apiFindEnemy, 500 ); 
+      timerFindEnemy = setTimeout( apiFindEnemy, 500 ); 
     }      
   })
 }
     
+
     
 const meetingPlayers = () => {
 
@@ -171,7 +186,6 @@ const meetingPlayers = () => {
 
 
 /** FUNCTIONS PLAY ROUND *******************************************/
-
 
 const startRound = () => {
 
@@ -215,6 +229,7 @@ const initButtonsChoiceHero = () => {
     isUpdadeButtonsImgs
   )     
 }
+
 
 const isUpdadeButtonsImgs = () => {
 
@@ -299,7 +314,6 @@ const nextRound = () => {
 
   
 /** FUNCTIONS END GAME *********************************************/
-
 
 const drawEnemyDisconnection = () => {
 
@@ -441,7 +455,116 @@ const clearEnemyFromScreen = () => {
   ctx.removeBadSign( false, true )
   ui.showButtonSearch()  
   connectFirst() 
-} 
+}
+
+
+/** LOCAL BOT ******************************************************/
+
+let gameBot = {
+  heroChoice: null,
+  enemyChoice: null,
+  results: []
+}
+
+const initButtonPlayWithBot = () => {
+  ui.initButtonPlayWithBot(() => {
+    ui.setMessageSearchEnemy( 'bot' )
+    ui.hideButtonSearch()    
+    ctx.removeStartSign( true, false )
+    ctx.prepearCanvasToFight( () => { 
+      startRoundBot()
+    })	    
+  })
+}
+
+const startRoundBot = () => {
+
+  gameStatus = 'play-bot'
+  ui.startAnimationRoundTimer( 7000 )
+  ui.redrawChoiceButtons( 'show' )
+  ui.showButtonsChoice()  
+  ctx.startAnimationKulak( true, true )
+  timerRound = setTimeout( endTimerRoundBot, 7000 )		
+}
+
+const endTimerRoundBot = () => {  
+  if ( gameBot.heroChoice == null ) gameBot.heroChoice = 'timeout' 
+  if ( gameBot.enemyChoice == null ) gameBot.enemyChoice = 'timeout' 
+  endRoundBot()
+}
+
+const endRoundBot = () => {
+  checkRoundWinnerBot()
+  gameBot.heroChoice = gameBot.enemyChoice = null
+  console.log( gameBot.results )
+  if ( ! checkGameWinnerBot() ) { 
+    startRoundBot()
+  } else {
+    startFatalityBot(  checkGameWinnerBot() )
+  }  
+}
+
+const checkRoundWinnerBot = () => {
+  if ( gameBot.heroChoice == gameBot.enemyChoice ) {
+    gameBot.results.push( 'draw' )
+    return
+  }
+  if ( gameBot.heroChoice == 'timeout' ) {
+    gameBot.results.push( 'enemy' )
+    return  
+  }
+  if ( gameBot.enemyChoice == 'timeout' ) {
+    gameBot.results.push( 'hero' )
+    return  
+  }
+  if ( gameBot.heroChoice == 'stone' ) {
+    if ( gameBot.enemyChoice == 'scissors' ) {
+      gameBot.results.push( 'hero' )
+      return
+    }
+    if ( gameBot.enemyChoice == 'paper' ) {
+      gameBot.results.push( 'enemy' )
+      return
+    }         
+  }
+  if ( gameBot.heroChoice == 'scissors' ) {
+    if ( gameBot.enemyChoice == 'stone' ) {
+      gameBot.results.push( 'enemy' )
+      return
+    }
+    if ( gameBot.enemyChoice == 'paper' ) {
+      gameBot.results.push( 'hero' )
+      return
+    }         
+  }
+  if ( gameBot.heroChoice == 'paper' ) {
+    if ( gameBot.enemyChoice == 'stone' ) {
+      gameBot.results.push( 'hero' )
+      return
+    }
+    if ( gameBot.enemyChoice == 'scissors' ) {
+      gameBot.results.push( 'enemy' )
+      return
+    }         
+  }   
+}
+
+const checkGameWinnerBot = () => {
+   let winsHero = 0
+   let winsEnemy = 0
+   for ( let i = 0; i < gameBot.results.length; i ++ ) {
+     if ( gameBot.results[i] == 'draw' ) winsHero ++ //!!!!!!!!!!!!!!!!!!!!
+     if ( gameBot.results[i] == 'enemy' ) winsEnemy ++
+   }
+   if ( winsHero > winsEnemy && winsHero > 2 ) { return 'hero' }
+   if ( winsEnemy > winsHero && winsEnemy > 3 ) { return 'enemy '}
+   return false 
+}
+
+const startFatalityBot = () => {
+  alert( 'fatality' )
+}
+
 
 /** RESIZE WIDDOW **************************************************/
 
@@ -452,8 +575,8 @@ const reckonWindowSize = () => {
 
 window.addEventListener( 'resize', reckonWindowSize, false )
 
-/** START INIT *****************************************************/
 
+/** START INIT *****************************************************/
 
 init()
 

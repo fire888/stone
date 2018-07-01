@@ -39,15 +39,19 @@ class Ui {
     $( '<div id="result"></div>').appendTo( '#score' )      
     $( '<div id="fatality"></div>').appendTo( '#score' )    
 
+
     $( '<div id="buttonSearchWrapper"></div>' ).appendTo( 'body' )
+    $( '<button id="buttonPlayWithBot" class="startPlay buttonsPrepearPlay"></button>').appendTo( '#buttonSearchWrapper' )
+    $( '<p class="buttonText" >Play with Bot</p>' ).appendTo( '#buttonPlayWithBot' )     
+    $( '<button id="buttonSearch" class="startPlay buttonsPrepearPlay"></button>' ).appendTo( '#buttonSearchWrapper' )
+    $( '<p class="buttonText" >Search enemy</p>' ).appendTo( '#buttonSearch' )
 
-    $( '<button id="buttonStart"></button>' ).appendTo( '#buttonSearchWrapper' )  
-    $( '#buttonStart' ).hide()
 
-    $( '<button id="buttonSearch"></button>' ).appendTo( '#buttonSearchWrapper' ) 
-    $( '<img src="app/imgs/btnStart.png"/>' ).appendTo( '#buttonSearch' ) 
-    $( '<p id="searchText" >Search enemy</p>' ).appendTo( '#buttonSearch' )
-    this.hideButtonSearch()
+    $( '<div id="buttonSearchStopWrapper"></div>' ).appendTo( 'body' )
+    $( '<button class="buttonsPrepearPlay" id="buttonSearchStop"></button>' ).appendTo( '#buttonSearchStopWrapper' )
+    $( '<p class="buttonText" >Stop search</p>' ).appendTo( '#buttonSearchStop' )    
+    $( '#buttonSearchStop' ).hide() 
+
 
     $( "<div id='buttonsChoiceWrapper'></div>" ).appendTo( "body" )    
     $( "<button class='buttonsChoice' id='stone' value='stone'><img src='app/imgs/btnStone.png'/></button>" ).appendTo( "#buttonsChoiceWrapper" ) 
@@ -60,26 +64,24 @@ class Ui {
 
   resizeUi() {
     let h = window.innerHeight
-    let step = h/20
-    $( '#buttonStart').css({ 
+    let step = h/20   
+    $( '#buttonSearchWrapper' ).css( { 'height': step*4.0 + 'px' } )
+    $( '#buttonSearchWrapperStop' ).css( { 'height': step*1.8 + 'px' } )        
+    $( '.buttonsPrepearPlay' ).css({ 
+        'width':       step*8.5 + 'px',
+        'height':      step*1.3 + 'px' 
+      })
+    $( '#buttonSearch').css({ 
         'height':      step*2.3 + 'px',
-        'width':       step*8.5 + 'px', 
-        'font-size':   step*0.7 + 'px'      
+      })   
+    $( '.buttonText' ).css({
+        'font-size':   step*0.5 + 'px'          
       })    
     $( '#buttonsChoiceWrapper' ).css( { 'height': step*2.5 + 'px' } )    
     $( '.buttonsChoice' ).css({ 
         'width':       step*2.8 + 'px',
         'height':      step*2.3 + 'px' 
       }) 
-    $( '#buttonSearchWrapper' ).css( { 'height': step*2.5 + 'px' } )   
-    $( '#buttonSearch').css({ 
-        'height':      step*2.3 + 'px',
-        'width':       step*8.5 + 'px' 
-      })
-    $( '#searchText' ).css({
-        'font-size':   step*0.7 + 'px', 
-        'margin-top':  step*0.8 + 'px'           
-      })  
     $( '#scoreWrapper' ).css( { 'width': step*10 + 'px' } )   
     $( '#score' ).css({ 
         'width':       step*7 + 'px',
@@ -112,14 +114,6 @@ class Ui {
     
   }
   
-  initStartButton( updateGame ) {
-    $( '#buttonStart' ).show()
-    $( '#buttonStart' ).click(() => {
-      $( '#buttonStart' ).remove()
-      updateGame()
-    }) 
-  }
-
 
   /** START GAME ***************************************************/
 
@@ -131,20 +125,36 @@ class Ui {
   clickButtonSearchEnemy( updateGame ) {
     $( '#buttonSearch' ).click(() => {         
       updateGame()
-      $( '#buttonSearch' ).hide()       
+      this.showButtonStopSearch()
       $( '#enemyName' ).html( 'enemy searching ... ' )  
       this.resizeUi()           
     })
   }
+
+  initButtonStopSearchEnemy( updateGame ) {
+    $( '#buttonSearchStop' ).click(() => {         
+      updateGame()  
+      this.resizeUi()           
+    })    
+  }
     
   setMessageSearchEnemy( name ) {
     $( '#enemyName' ).html( 'enemy<br/><span class="namePl"> ' + name + '</span>' )
+    this.hideButtonStopSearch()
     this.resizeUi()
   }
 
-  showButtonSearch() { $( '#buttonSearch' ).show() }  
+  showButtonSearch() { $( '.startPlay' ).show() }  
 
-  hideButtonSearch() { $( '#buttonSearch' ).hide() }    
+  hideButtonSearch() { $( '.startPlay' ).hide() }
+   
+  showButtonStopSearch() {
+    $( '#buttonSearchStop' ).show()     
+  }
+
+  hideButtonStopSearch() {
+    $( '#buttonSearchStop' ).hide()      
+  }
 
 
   /* ROUND *********************************************************/
@@ -246,10 +256,18 @@ class Ui {
     $( '#scores' ).html( '' ) 
     $( '#enemyName' ).html( '' ) 
   }
+
+  /** BOT FUNCTIONS ************************************************/
+
+  initButtonPlayWithBot( updateGame ) {
+    $( '#buttonPlayWithBot' ).click( () => {
+      updateGame()
+    })
+  }
 }
   
 
-
+/** FUNCTIONS ******************************************************/
 
 const animationRoundTimer = () => {
   let m = timerWidth - timerMargin/7000*timerWidth
