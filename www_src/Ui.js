@@ -163,12 +163,12 @@ class Ui {
     animationRoundTimer()
   }
 
-  clickButtonsChoiceHero( updateGame, isStatePlay ) {
+  clickButtonsChoiceHero( updateGame, isRedrawButtons ) {
     $( '.buttonsChoice' ).click(( e ) => {
-      if ( isStatePlay() ) {
-        this.redrawChoiceButtons( e.target.value )        
+      if ( isRedrawButtons() ) {
+        this.redrawChoiceButtons( e.target.value )   
       }
-      updateGame( e )	      
+      updateGame( e )	
     })  
   } 
 

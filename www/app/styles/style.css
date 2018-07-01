@@ -27,8 +27,6 @@ body {
 #loaderWrapper img{
   margin-top: -30px;
   margin: 0px;
-  /*height: 150%;
-  width: auto;*/
 }
 
 #canvasWrapper canvas {

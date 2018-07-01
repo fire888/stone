@@ -133,22 +133,7 @@ const initButtonSearchEnemy = () => {
 }  
   
   
-const initButtonsChoiceHero = () => {
-
-  ui.clickButtonsChoiceHero( 
-    ( e ) => {
-      if ( buttonsNotBlock() ) {	
-        gameStatus = 'made-choice-and-wait' 
-        sendHeroChoice( e.target.value )
-        return 
-      }   
-      checkFatalityDone( e.target.value )        		
-    }, 
-    buttonsNotBlock
-  )     
-}  
-    
-    
+      
 /** START FUNCTIONS ************************************************/
 
 
@@ -213,7 +198,31 @@ const waitEnemyChoice = () => {
   })
 }		
     
-    
+
+const initButtonsChoiceHero = () => {
+
+  ui.clickButtonsChoiceHero( 
+    ( e ) => {     
+      if ( gameStatus === 'play' ) {	
+        gameStatus = 'made-choice-and-wait' 
+        sendHeroChoice( e.target.value )
+        return 
+      }
+      if ( gameStatus === 'wait-choice-fatality' ) {
+        checkFatalityDone( e.target.value )
+      }        		
+    }, 
+    isUpdadeButtonsImgs
+  )     
+}
+
+const isUpdadeButtonsImgs = () => {
+
+  if ( gameStatus === 'play' ) return true
+  return false
+}
+
+
 const sendHeroChoice = ( choice ) => {
 
   ctx.stopAnimationKulak( true, false )
@@ -221,14 +230,6 @@ const sendHeroChoice = ( choice ) => {
     updateGameResult( serverResult )
   }) 
 }	 
-
-
-const buttonsNotBlock = () => {
-
-  if ( gameStatus == 'made-choice-and-wait' ) return false
-  if (  gameStatus == 'wait-choice-fatality' ) return false
-  return true
-} 
 
 
 const endTimerRound = () => {  
