@@ -464,7 +464,6 @@ let gameBot = null
 
 const initButtonPlayWithBot = () => {
   ui.initButtonPlayWithBot(() => {
-    
     gameBot = {
       myChoice:              null,
       enemyChoice:           null,
@@ -473,7 +472,6 @@ const initButtonPlayWithBot = () => {
       results:               [],
       fatality:              null
     }
-
     initButtonsChoiceHeroBot()
     ui.clearScreen()    
     ui.setMessageSearchEnemy( 'bot' )
@@ -489,7 +487,6 @@ const initButtonPlayWithBot = () => {
 }
 
 const startRoundBot = () => {
-
   ctx.removePlayersChoices()
   gameStatus = 'play-bot'
   ui.startAnimationRoundTimer( 7000 )
@@ -547,17 +544,13 @@ const endTimerRoundBot = () => {
 const checkEndRoundBot = () => {
   if ( gameBot.myChoice == null ) return
   if ( gameBot.enemyChoice == null ) return
-  
   gameBot.winner = checkRoundWinnerBot()
   gameBot.results.push( gameBot.winner ) 
-
   ui.drawRoundResult( gameBot )
   ctx.removeAnimationKulak( true, true )  
   ctx.drawPlayersChoices( gameBot )
-  
   clearTimeout( timerRound )  
   gameBot.myChoice = gameBot.enemyChoice = gameBot.winner = null
-
   if ( ! checkGameWinnerBot() ) { 
     setTimeout( startRoundBot, 4000 )
   } else {
