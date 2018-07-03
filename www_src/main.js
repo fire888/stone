@@ -57,6 +57,7 @@ const init = () => {
       initButtonSearchEnemy()
       initButtonStopSearchEnemy()      
       initButtonPlayWithBot()       
+      initButtonsChoiceHero()      
       initErrorConnection()
       initGooutBrowserTabError()                           
       resolve()
@@ -122,7 +123,6 @@ const initStartButton = () => {
 const initButtonSearchEnemy = () => {
 
   ui.clickButtonSearchEnemy(() => {
-    initButtonsChoiceHero()
     ctx.removeGoodSign( true, false )
     ctx.removeBadSign( true, false )  
     ctx.removeAnimationFatality()
@@ -224,7 +224,18 @@ const initButtonsChoiceHero = () => {
       }
       if ( gameStatus === 'wait-choice-fatality' ) {
         checkFatalityDone( e.target.value )
-      }        		
+      }
+      if ( gameStatus === 'play-bot' ) {	
+        gameStatus = 'made-choice-and-wait-bot' 
+        gameBot.myChoice = e.target.value
+        ctx.stopAnimationKulak( true, false )
+        checkEndRoundBot()        
+        return 
+      }
+      if ( gameStatus === 'wait-fat-bot' ) {
+        console.log( 'push' )
+        checkFatalityDoneBOT( e.target.value )
+      }        		            		
     }, 
     isUpdadeButtonsImgs
   )     
@@ -233,7 +244,7 @@ const initButtonsChoiceHero = () => {
 
 const isUpdadeButtonsImgs = () => {
 
-  if ( gameStatus === 'play' ) return true
+  if ( gameStatus === 'play' ||  gameStatus === 'play-bot'  ) return true
   return false
 }
 
@@ -472,7 +483,6 @@ const initButtonPlayWithBot = () => {
       results:               [],
       fatality:              null
     }
-    initButtonsChoiceHeroBot()
     ui.clearScreen()    
     ui.setMessageSearchEnemy( 'bot' )
     ui.hideButtonSearch()
@@ -510,30 +520,6 @@ const makeChoiceBot = () => {
   checkEndRoundBot()
 }
 
-const initButtonsChoiceHeroBot = () => {
-  ui.clickButtonsChoiceHero( 
-    ( e ) => {     
-      if ( gameStatus === 'play-bot' ) {	
-        gameStatus = 'made-choice-and-wait-bot' 
-        gameBot.myChoice = e.target.value
-        ctx.stopAnimationKulak( true, false )
-        checkEndRoundBot()        
-        return 
-      }
-      if ( gameStatus === 'wait-fat-bot' ) {
-        checkFatalityDoneBOT( e.target.value )
-      }        		
-    }, 
-    isUpdadeButtonsImgsBot
-  )     
-}
-
-const isUpdadeButtonsImgsBot = () => {
-  if ( gameStatus === 'play-bot' ) { return true }
-  return false
-}
-
-
 const endTimerRoundBot = () => {  
   clearTimeout( gameBot.enemyRoundChoiceTimer )
   if ( gameBot.myChoice == null ) gameBot.myChoice = 'timeout' 
@@ -554,6 +540,7 @@ const checkEndRoundBot = () => {
   if ( ! checkGameWinnerBot() ) { 
     setTimeout( startRoundBot, 4000 )
   } else {
+    console.log( 'checkEndRoundBot - startfat' )
     startFatalityBot( checkGameWinnerBot() )
   }  
 }
@@ -596,7 +583,8 @@ const startFatalityBot = v => {
     ui.redrawChoiceButtons( 'show' )
     ctx.startAnimationWait( true, false )
     ctx.startAnimationComa( false, true )
-    makeHashFatality()    
+    makeHashFatality()
+
     timerEndFatality = setTimeout( () => { drawFatalityBOT( 'me', false ) } , 7000 ) 
   }
   if ( v == 'enemy' ) {
@@ -614,7 +602,7 @@ const startFatalityBot = v => {
   } 
 }
 
-const checkFatalityDoneBOT = choice => {
+const checkFatalityDoneBOT = choice => { 
   if ( choice == randomFatalityHash[0] ) {		
     randomFatalityHash.splice( 0, 1 );
     if ( randomFatalityHash.length == 0 ) {
@@ -626,7 +614,6 @@ const checkFatalityDoneBOT = choice => {
 }
 
 const drawFatalityBOT = ( who, isFat) => {
-
   clearTimeout( timerEndFatality )
   ctx.removeAnimationWait( true, true )
   ctx.stopAnimationComa( true, true )
