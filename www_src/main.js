@@ -600,7 +600,7 @@ const startFatalityBot = v => {
     timerEndFatality = setTimeout( () => { drawFatalityBOT( 'me', false ) } , 7000 ) 
   }
   if ( v == 'enemy' ) {
-    setMessageStartFatality( 'enemy' )
+    ui.setMessageStartFatality( 'enemy' )
     ui.hideButtonsChoice()
     ctx.startAnimationWait( false, true )
     ctx.startAnimationComa( true, false )
